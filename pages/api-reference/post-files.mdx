@@ -1,77 +1,100 @@
 ---
-title: POST /files
+title: Upload file
 description: Upload a file to Pinarkive. The file is pinned on IPFS in the specified cluster.
 ---
 
-# POST /files
+# Upload file
 
-Upload a single file. The file is added to IPFS and pinned in the cluster. Requires authentication (Bearer token or API key) and scope `files:write`.
+Upload a single file. The file is added to IPFS and pinned in the cluster.
+
+**Scope required:** `files:write`
+
+---
 
 ## Endpoint
 
-```
-POST https://api.pinarkive.com/v3/files
-```
+| | |
+|--|--|
+| **Method** | `POST` |
+| **URL** | `https://api.pinarkive.com/api/v3/files` |
+| **Content-Type** | `multipart/form-data` |
 
-## Description
+**Headers:** `Authorization: Bearer YOUR_API_KEY` or `X-API-Key: YOUR_API_KEY`
 
-- **Content-Type:** `multipart/form-data`
-- **Body:** form field `file` (required). Optional: `cl` (cluster id), `timelock` (ISO 8601, premium only).
-- **Response:** CID, clusterId, and optionally expiresAt.
+**Body:** Form field `file` (required). Optional: `cl` (cluster id), `timelock` (ISO 8601, premium only).
 
-## cURL
+---
+
+## Request
+
+### cURL
 
 ```bash
-curl -X POST https://api.pinarkive.com/v3/files \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -F file=@image.png
+curl -X POST https://api.pinarkive.com/api/v3/files \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -F "file=@image.png"
 ```
 
 With optional cluster and timelock (premium):
 
 ```bash
-curl -X POST https://api.pinarkive.com/v3/files \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -F file=@document.pdf \
-  -F cl=cl0-global \
+curl -X POST https://api.pinarkive.com/api/v3/files \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -F "file=@document.pdf" \
+  -F "cl=cl0-global" \
   -F "timelock=2026-12-31T23:59:59Z"
 ```
 
-## JavaScript
+### JavaScript (fetch)
 
 ```javascript
-const formData = new FormData();
-formData.append('file', fileInput.files[0]);
-formData.append('cl', 'cl0-global'); // optional
+const form = new FormData();
+form.append("file", file);
 
-const response = await fetch('https://api.pinarkive.com/v3/files', {
-  method: 'POST',
+const response = await fetch("https://api.pinarkive.com/api/v3/files", {
+  method: "POST",
   headers: {
-    'Authorization': `Bearer ${process.env.PINARKIVE_API_KEY}`,
+    "X-API-Key": process.env.PINARKIVE_API_KEY,
   },
-  body: formData,
+  body: form,
 });
-
 const data = await response.json();
-console.log(data.cid, data.clusterId);
 ```
 
-## Python
+### JavaScript (axios)
+
+```javascript
+const form = new FormData();
+form.append("file", file);
+
+const { data } = await axios.post(
+  "https://api.pinarkive.com/api/v3/files",
+  form,
+  {
+    headers: {
+      "X-API-Key": process.env.PINARKIVE_API_KEY,
+    },
+  }
+);
+```
+
+### Python
 
 ```python
+import os
 import requests
 
-url = "https://api.pinarkive.com/v3/files"
-headers = {"Authorization": f"Bearer {os.environ['PINARKIVE_API_KEY']}"}
+url = "https://api.pinarkive.com/api/v3/files"
+headers = {"X-API-Key": os.environ["PINARKIVE_API_KEY"]}
 files = {"file": open("image.png", "rb")}
 data = {"cl": "cl0-global"}  # optional
 
 r = requests.post(url, headers=headers, files=files, data=data)
 r.raise_for_status()
-print(r.json()["cid"], r.json()["clusterId"])
+print(r.json())
 ```
 
-## Go
+### Go
 
 ```go
 package main
@@ -85,55 +108,48 @@ import (
 )
 
 func main() {
-	url := "https://api.pinarkive.com/v3/files"
+	url := "https://api.pinarkive.com/api/v3/files"
 	apiKey := os.Getenv("PINARKIVE_API_KEY")
-
 	var buf bytes.Buffer
 	w := multipart.NewWriter(&buf)
 	file, _ := os.Open("image.png")
 	defer file.Close()
 	part, _ := w.CreateFormFile("file", "image.png")
 	io.Copy(part, file)
-	w.WriteField("cl", "cl0-global") // optional
+	w.WriteField("cl", "cl0-global")
 	w.Close()
-
 	req, _ := http.NewRequest("POST", url, &buf)
-	req.Header.Set("Authorization", "Bearer "+apiKey)
+	req.Header.Set("X-API-Key", apiKey)
 	req.Header.Set("Content-Type", w.FormDataContentType())
-
 	resp, _ := http.DefaultClient.Do(req)
 	defer resp.Body.Close()
-	// parse JSON from resp.Body for cid, clusterId
 }
 ```
 
-## PHP
+### PHP
 
 ```php
 <?php
-$url = 'https://api.pinarkive.com/v3/files';
+$url = 'https://api.pinarkive.com/api/v3/files';
 $apiKey = getenv('PINARKIVE_API_KEY');
-
 $cfile = new CURLFile('image.png', 'image/png', 'image.png');
-$post = ['file' => $cfile, 'cl' => 'cl0-global']; // cl optional
+$post = ['file' => $cfile, 'cl' => 'cl0-global'];
 
 $ch = curl_init($url);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Authorization: Bearer ' . $apiKey,
-]);
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-API-Key: ' . $apiKey]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
 $response = curl_exec($ch);
 curl_close($ch);
 $data = json_decode($response, true);
-echo $data['cid'] . ' ' . $data['clusterId'];
 ```
 
-## Example response
+---
 
-**Success (200/201)**
+## Response
+
+### Success (200 / 201)
 
 ```json
 {
@@ -143,19 +159,20 @@ echo $data['cid'] . ' ' . $data['clusterId'];
 }
 ```
 
-| Field       | Type   | Description                          |
-|------------|--------|--------------------------------------|
-| `cid`      | string | IPFS content identifier             |
-| `clusterId`| string | Cluster where the file was pinned   |
-| `expiresAt`| string \| null | Expiration (timelock), if set |
+| Field | Type | Description |
+|-------|------|-------------|
+| `cid` | string | IPFS content identifier |
+| `clusterId` | string | Cluster where the file was pinned |
+| `expiresAt` | string \| null | Expiration (timelock), if set |
 
-**Error (4xx/5xx)**
+### Error (4xx / 5xx)
 
 ```json
 {
   "error": "Unauthorized",
-  "message": "Invalid or missing API key"
+  "message": "Invalid or missing API key",
+  "code": "INVALID_API_KEY"
 }
 ```
 
-Common codes: **401** (missing/invalid token), **403** (e.g. plan limit, timelock on free plan, or **missing scope**: `code: missing_scope`, `required`), **413** (file too large), **429** (rate limit; response includes `retryAfter`, header `Retry-After`).
+**Common codes:** **401** (invalid/missing key), **403** (plan limit, timelock on free plan, or `code: missing_scope`, `required`), **413** (file too large), **429** (rate limit; use `retryAfter` / `Retry-After`). See [Error handling](/reference/errors).

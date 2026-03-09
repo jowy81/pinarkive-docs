@@ -1,7 +1,8 @@
 {
-  "post-files": "POST /files",
-  "post-pin": "POST /pin",
-  "get-files": "GET /files",
-  "delete-file": "DELETE /file",
-  "get-clusters": "GET /clusters"
+  "post-files": "Upload file",
+  "upload-directory": "Upload directory",
+  "post-pin": "Pin",
+  "get-files": "List files",
+  "delete-file": "Delete file",
+  "get-clusters": "Get clusters"
 }

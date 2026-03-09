@@ -5,6 +5,8 @@ description: Overview of the Pinarkive API and core concepts.
 
 # Introduction
 
+New here? Go to [Quick Start](/quickstart/quick-start) to use the API in under 2 minutes.
+
 Pinarkive is an IPFS pinning service that lets you upload files, pin content by CID, and serve it through regional clusters and gateways. The API is REST-based and uses **API v3** for all endpoints.
 
 ## Base URL
@@ -12,7 +14,7 @@ Pinarkive is an IPFS pinning service that lets you upload files, pin content by 
 All requests use the following base URL:
 
 ```
-https://api.pinarkive.com/v3
+https://api.pinarkive.com/api/v3
 ```
 
 ## Authentication
@@ -75,5 +77,8 @@ If the account has two-factor authentication (TOTP) enabled:
 
 ## Next steps
 
+- [Quick Start](/quickstart/quick-start) — Four steps to your first upload
 - [Upload your first file](/quickstart/upload-first-file) — Minimal curl and response overview
-- [API Reference](/api-reference/post-files) — Full endpoint documentation with examples in multiple languages
+- [Files API](/api-reference/post-files) — Full endpoint docs (cURL, fetch, axios, Python, Go, PHP)
+- [Error handling](/reference/errors) — Error codes and how to handle them
+- [Rate limits](/reference/rate-limits) — Limits and retry behavior

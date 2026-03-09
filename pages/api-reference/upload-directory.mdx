@@ -1,0 +1,37 @@
+---
+title: Upload directory
+description: Upload multiple files or a directory.
+---
+
+# Upload directory
+
+The API does not provide a single "upload directory" endpoint. To upload multiple files:
+
+1. **Call `POST /files` for each file** — Use the same [Upload file](/api-reference/post-files) endpoint in a loop (or in parallel with rate limiting in mind).
+2. **Optional:** Use `parentCid` or metadata to associate uploads with a folder or collection if your backend supports it.
+
+**Example: upload multiple files (JavaScript)**
+
+```javascript
+const files = [/* File or Blob objects */];
+const baseUrl = 'https://api.pinarkive.com/api/v3/files';
+const apiKey = process.env.PINARKIVE_API_KEY;
+
+for (const file of files) {
+  const form = new FormData();
+  form.append('file', file);
+  const res = await fetch(baseUrl, {
+    method: 'POST',
+    headers: { 'X-API-Key': apiKey },
+    body: form,
+  });
+  const data = await res.json();
+  console.log(file.name, data.cid);
+}
+```
+
+Respect [rate limits](/reference/rate-limits) when uploading in bulk. For large batches, add delay or use `Retry-After` on 429.
+
+---
+
+**See also:** [Upload file](/api-reference/post-files) · [Rate limits](/reference/rate-limits)

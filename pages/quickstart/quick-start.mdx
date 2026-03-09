@@ -1,0 +1,105 @@
+---
+title: Quick Start
+description: Use the Pinarkive API in under 2 minutes.
+---
+
+# Quick Start
+
+Get started with the Pinarkive API in four steps. You'll create an account, get an API key, upload a file, and receive a content identifier (CID) to access your file.
+
+---
+
+## Base URL
+
+All API requests use this base URL:
+
+```
+https://api.pinarkive.com/api/v3
+```
+
+## Authentication
+
+All requests require an API key. Send it in the header:
+
+```
+Authorization: Bearer YOUR_API_KEY
+```
+
+Or use the alternative header:
+
+```
+X-API-Key: YOUR_API_KEY
+```
+
+---
+
+## Step 1 — Create account
+
+Sign up at [pinarkive.com](https://pinarkive.com) or your Pinarkive dashboard. Confirm your email if required.
+
+---
+
+## Step 2 — Generate API key
+
+1. Log in to the [Pinarkive dashboard](https://pinarkive.com).
+2. Go to **Settings** or **API Keys**.
+3. Create a new API key and assign the scope **`files:write`** (and **`files:read`** if you want to list uploads).
+4. Copy the key and store it securely. You won't be able to see it again.
+
+You can also generate keys via the API: `POST /api/v3/tokens/generate` (see [Authentication](/authentication) and [Tokens](/account/tokens)).
+
+---
+
+## Step 3 — Upload a file
+
+Send a single file with a `POST` request to `/files` using multipart form data.
+
+**Request**
+
+```bash
+curl -X POST https://api.pinarkive.com/api/v3/files \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -F "file=@example.png"
+```
+
+Use either `Authorization: Bearer YOUR_API_KEY` or `X-API-Key: YOUR_API_KEY`. Replace `YOUR_API_KEY` with your key and `example.png` with your file path.
+
+---
+
+## Step 4 — Get CID / file identifier
+
+The API responds with the IPFS content identifier and metadata.
+
+**Response**
+
+```json
+{
+  "cid": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
+  "clusterId": "cl0-global",
+  "expiresAt": null
+}
+```
+
+| Field        | Description |
+|-------------|-------------|
+| `cid`       | IPFS content identifier — use this to access or share the file |
+| `clusterId`| Cluster where the file was pinned |
+| `expiresAt`| Expiration time if a timelock was set; otherwise `null` |
+
+**View your file:** Open the URL in a browser or use it in your app:
+
+```
+https://gateway.pinarkive.com/ipfs/<cid>
+```
+
+Replace `<cid>` with the `cid` value from the response.
+
+---
+
+## Next steps
+
+- [Authentication](/authentication) — Base URL, headers, API keys, and scopes
+- [Upload file](/api-reference/post-files) — Full request/response reference with cURL, fetch, and Axios
+- [Error handling](/reference/errors) — Error codes and how to handle them
+- [Rate limits](/reference/rate-limits) — Limits and response headers

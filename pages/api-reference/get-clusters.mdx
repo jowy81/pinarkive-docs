@@ -1,63 +1,72 @@
 ---
-title: GET /clusters
+title: Get clusters
 description: List clusters and gateways available to your account.
 ---
 
-# GET /clusters
+# Get clusters
 
-List clusters allowed for your plan and their gateways (for viewing files). Requires authentication and scope `cluster:read`. The API endpoint is `GET /users/me/clusters`.
+List clusters allowed for your plan and their gateways (for viewing files). API endpoint: `GET /users/me/clusters`.
+
+**Scope required:** `cluster:read`
+
+---
 
 ## Endpoint
 
-```
-GET https://api.pinarkive.com/v3/users/me/clusters
-```
+| | |
+|--|--|
+| **Method** | `GET` |
+| **URL** | `https://api.pinarkive.com/api/v3/users/me/clusters` |
 
-## Description
+**Headers:** `Authorization: Bearer YOUR_API_KEY` or `X-API-Key: YOUR_API_KEY`
 
-- No query parameters required.
-- **Response:** Array of clusters; each includes `gateways` with `publicUrl` or `url` and `label`. Use `publicUrl` when present, otherwise `url`.
+No query parameters required.
 
-## cURL
+---
+
+## Request
+
+### cURL
 
 ```bash
-curl -X GET "https://api.pinarkive.com/v3/users/me/clusters" \
-  -H "Authorization: Bearer YOUR_API_KEY"
+curl -X GET "https://api.pinarkive.com/api/v3/users/me/clusters" \
+  -H "X-API-Key: YOUR_API_KEY"
 ```
 
-## JavaScript
+### JavaScript (fetch)
 
 ```javascript
-const response = await fetch('https://api.pinarkive.com/v3/users/me/clusters', {
-  headers: {
-    'Authorization': `Bearer ${process.env.PINARKIVE_API_KEY}`,
-  },
+const response = await fetch("https://api.pinarkive.com/api/v3/users/me/clusters", {
+  headers: { "X-API-Key": process.env.PINARKIVE_API_KEY },
 });
-
 const data = await response.json();
-const gatewayUrl = data[0]?.gateways?.[0]?.publicUrl || data[0]?.gateways?.[0]?.url;
-console.log('View file at:', `${gatewayUrl}ipfs/<cid>`);
 ```
 
-## Python
+### JavaScript (axios)
+
+```javascript
+const { data } = await axios.get(
+  "https://api.pinarkive.com/api/v3/users/me/clusters",
+  {
+    headers: { "X-API-Key": process.env.PINARKIVE_API_KEY },
+  }
+);
+```
+
+### Python
 
 ```python
 import os
 import requests
 
-url = "https://api.pinarkive.com/v3/users/me/clusters"
-headers = {"Authorization": f"Bearer {os.environ['PINARKIVE_API_KEY']}"}
-
+url = "https://api.pinarkive.com/api/v3/users/me/clusters"
+headers = {"X-API-Key": os.environ["PINARKIVE_API_KEY"]}
 r = requests.get(url, headers=headers)
 r.raise_for_status()
 clusters = r.json()
-for c in clusters:
-    for gw in c.get("gateways", []):
-        base = gw.get("publicUrl") or gw.get("url")
-        print(c.get("clusterId"), base)
 ```
 
-## Go
+### Go
 
 ```go
 package main
@@ -68,44 +77,34 @@ import (
 )
 
 func main() {
-	url := "https://api.pinarkive.com/v3/users/me/clusters"
+	url := "https://api.pinarkive.com/api/v3/users/me/clusters"
 	apiKey := os.Getenv("PINARKIVE_API_KEY")
-
 	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-
+	req.Header.Set("X-API-Key", apiKey)
 	resp, _ := http.DefaultClient.Do(req)
 	defer resp.Body.Close()
 }
 ```
 
-## PHP
+### PHP
 
 ```php
 <?php
-$url = 'https://api.pinarkive.com/v3/users/me/clusters';
+$url = 'https://api.pinarkive.com/api/v3/users/me/clusters';
 $apiKey = getenv('PINARKIVE_API_KEY');
-
 $ch = curl_init($url);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Authorization: Bearer ' . $apiKey,
-]);
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-API-Key: ' . $apiKey]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
 $response = curl_exec($ch);
 curl_close($ch);
 $clusters = json_decode($response, true);
-foreach ($clusters as $c) {
-    foreach ($c['gateways'] ?? [] as $gw) {
-        $base = $gw['publicUrl'] ?? $gw['url'];
-        echo $c['clusterId'] . ' ' . $base . "\n";
-    }
-}
 ```
 
-## Example response
+---
 
-**Success (200)**
+## Response
+
+### Success (200)
 
 ```json
 [
@@ -123,15 +122,16 @@ foreach ($clusters as $c) {
 ]
 ```
 
-Gateway URLs are the **base** (ending with `/ipfs/`). Append the CID: `base + cid` → e.g. `https://gateway.pinarkive.com/ipfs/<cid>`.
+Gateway URLs are **bases** (ending with `/ipfs/`). Append the CID: `base + cid` → e.g. `https://gateway.pinarkive.com/ipfs/<cid>`.
 
-**Error (4xx/5xx)**
+### Error (4xx / 5xx)
 
 ```json
 {
   "error": "Unauthorized",
-  "message": "Invalid or missing API key"
+  "message": "Invalid or missing API key",
+  "code": "INVALID_API_KEY"
 }
 ```
 
-Common codes: **401**, **403** (missing scope: `code: missing_scope`, `required`), **429** (rate limit; `retryAfter`, header `Retry-After`).
+**Common codes:** **401**, **403** (`code: missing_scope`, `required`), **429**. See [Error handling](/reference/errors).

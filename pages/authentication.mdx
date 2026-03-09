@@ -1,0 +1,96 @@
+---
+title: Authentication
+description: Base URL, headers, and API keys for the Pinarkive API.
+---
+
+# Authentication
+
+All protected endpoints require authentication. Use an **API key** or a **session JWT** (Bearer token).
+
+---
+
+## Base URL
+
+```
+https://api.pinarkive.com/api/v3
+```
+
+Use this base for all API requests. Example: `https://api.pinarkive.com/api/v3/files` for uploads.
+
+---
+
+## Headers
+
+### Required for protected routes
+
+| Header | Description | Example |
+|--------|-------------|---------|
+| `Authorization` | Bearer token (JWT or API key) | `Authorization: Bearer YOUR_API_KEY` |
+| `X-API-Key` | Alternative to Bearer; send your API key | `X-API-Key: YOUR_API_KEY` |
+
+Use **one** of the two. Sending both is allowed; the server will accept either.
+
+### Optional
+
+| Header | When to use | Description |
+|--------|--------------|-------------|
+| `X-Request-Source` | Web apps using Bearer | Set to **`web`** so the backend classifies traffic as WEB in logs. Without it, browser requests may be logged as JWT. |
+| `X-Cluster` | Multi-cluster | Override or target a cluster (or use `cl` in body/query). |
+| `Content-Type` | JSON request bodies | `application/json`. Omit for multipart uploads. |
+
+---
+
+## API Keys
+
+Create API keys in the [dashboard](https://pinarkive.com) or via `POST /api/v3/tokens/generate`. Each key can have **scopes** that limit what it can do:
+
+| Scope | Allows |
+|-------|--------|
+| `files:read` | List uploads (`GET /users/me/uploads`) |
+| `files:write` | Upload files (`POST /files`) and pin by CID (`POST /files/pin/:cid`) |
+| `files:delete` | Remove pins (`DELETE /files/remove/:cid`) |
+| `cluster:read` | List clusters and gateways (`GET /users/me/clusters`) |
+
+If a request is made with a token that doesn’t have the required scope, the API returns **403** with `code: missing_scope` and `required` (the scope name). See [Errors](/reference/errors).
+
+---
+
+## Example: authenticated request
+
+**cURL**
+
+```bash
+curl -X POST https://api.pinarkive.com/api/v3/files \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -F "file=@image.png"
+```
+
+**JavaScript (fetch)**
+
+```javascript
+const response = await fetch('https://api.pinarkive.com/api/v3/files', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': process.env.PINARKIVE_API_KEY,
+  },
+  body: formData,
+});
+```
+
+**JavaScript (axios)**
+
+```javascript
+await axios.post('https://api.pinarkive.com/api/v3/files', formData, {
+  headers: {
+    'X-API-Key': process.env.PINARKIVE_API_KEY,
+  },
+});
+```
+
+---
+
+## Next steps
+
+- [API Keys / Tokens](/account/tokens) — Generate and revoke tokens
+- [Quick Start](/quickstart/quick-start) — Create account and upload in four steps
+- [Reference: Errors](/reference/errors) — Invalid key, missing scope, rate limit

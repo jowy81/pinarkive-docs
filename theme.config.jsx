@@ -18,6 +18,9 @@ export default {
     </>
   ),
   primaryHue: { dark: 200, light: 220 },
+  nextThemes: {
+    defaultTheme: 'dark',
+  },
   sidebar: {
     defaultMenuCollapseLevel: 1,
     toggleButton: true,

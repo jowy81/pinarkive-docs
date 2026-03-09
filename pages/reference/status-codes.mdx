@@ -1,0 +1,89 @@
+---
+title: Status Codes
+description: HTTP status codes returned by the Pinarkive API.
+---
+
+# Status Codes
+
+The API uses standard HTTP status codes to indicate success or failure.
+
+---
+
+## Success
+
+| Code | Meaning |
+|------|---------|
+| **200 OK** | Request succeeded. Used for GET, DELETE, and most mutations. |
+| **201 Created** | Resource created (e.g. file uploaded or pin added). |
+
+---
+
+## Client errors
+
+| Code | Meaning |
+|------|---------|
+| **400 Bad Request** | Invalid request body, query, or parameters. For token/2FA flows: `code: 2fa_required` or `2fa_invalid`. |
+| **401 Unauthorized** | Missing or invalid API key or Bearer token. |
+| **403 Forbidden** | Not allowed: plan limit, disabled account, or token missing required scope (`code: missing_scope`, `required`). |
+| **404 Not Found** | Resource not found (e.g. CID not found for pin or delete). |
+| **409 Conflict** | Conflict with current state (e.g. duplicate token name). |
+| **413 Payload Too Large** | Upload exceeds allowed file size. |
+| **429 Too Many Requests** | Rate limit exceeded. Use `Retry-After` or body `retryAfter` to retry. See [Rate limits](/reference/rate-limits). |
+
+---
+
+## Server errors
+
+| Code | Meaning |
+|------|---------|
+| **500 Internal Server Error** | Unexpected server error. Retry with backoff. |
+| **503 Service Unavailable** | Service temporarily unavailable (e.g. maintenance or dependency issue). Retry later. |
+
+---
+
+## Checking status in code
+
+**JavaScript (fetch)**
+
+```javascript
+const res = await fetch(url, { headers: { 'X-API-Key': API_KEY } });
+
+if (res.ok) {
+  const data = await res.json();
+  return data;
+}
+
+switch (res.status) {
+  case 401:
+    throw new Error('Invalid or missing API key');
+  case 403:
+    throw new Error('Forbidden — check scopes or plan');
+  case 429:
+    throw new Error(`Rate limited. Retry after ${res.headers.get('Retry-After')}s`);
+  default:
+    throw new Error(res.statusText);
+}
+```
+
+**JavaScript (axios)**
+
+```javascript
+try {
+  const { data } = await axios.get(url, {
+    headers: { 'X-API-Key': API_KEY },
+  });
+  return data;
+} catch (e) {
+  if (e.response?.status === 401) throw new Error('Invalid API key');
+  if (e.response?.status === 429) throw new Error('Rate limited');
+  throw e;
+}
+```
+
+---
+
+## Next steps
+
+- [Error handling](/reference/errors) — Error codes and response body
+- [Rate limits](/reference/rate-limits) — 429 and retry behavior
+- [Authentication](/authentication) — API keys and headers

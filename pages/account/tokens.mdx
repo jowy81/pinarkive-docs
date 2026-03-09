@@ -1,0 +1,49 @@
+---
+title: Tokens
+description: Generate and manage API keys (tokens).
+---
+
+# Tokens
+
+API keys (tokens) are used to authenticate requests. Create them in the **dashboard** or via the API.
+
+---
+
+## Create token (dashboard)
+
+1. Log in at [pinarkive.com](https://pinarkive.com).
+2. Go to **Settings** or **API Keys**.
+3. Click **Create API key**.
+4. Choose **scopes** (e.g. `files:read`, `files:write`, `files:delete`, `cluster:read`).
+5. Copy and store the key securely; it may not be shown again.
+
+---
+
+## Create token (API)
+
+Generate a token with `POST /api/v3/tokens/generate` (authenticated with your session or existing token). Request body can include `name`, `scopes`, and, if 2FA is enabled, `totpCode` (or `twoFactorCode`).
+
+If the account has 2FA and you don’t send a valid code, the API returns **400** with `code: 2fa_required` or `2fa_invalid`. See [Error handling](/reference/errors).
+
+---
+
+## Revoke token
+
+Revoke via the dashboard or `POST /api/v3/tokens/revoke` (or the revoke endpoint documented in the API). With 2FA, the request may require `totpCode`.
+
+---
+
+## Scopes
+
+| Scope | Allows |
+|-------|--------|
+| `files:read` | List uploads |
+| `files:write` | Upload files, pin by CID |
+| `files:delete` | Remove pins |
+| `cluster:read` | List clusters and gateways |
+
+If a request uses a token without the required scope, the API returns **403** with `code: missing_scope` and `required`. See [Authentication](/authentication) and [Errors](/reference/errors).
+
+---
+
+**Next steps:** [Authentication](/authentication) · [Error handling](/reference/errors) · [Plans](/account/plans)

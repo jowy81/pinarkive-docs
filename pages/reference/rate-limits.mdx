@@ -1,0 +1,101 @@
+---
+title: Rate Limits
+description: API rate limits and response headers.
+---
+
+# Rate Limits
+
+The API is rate limited per API key (and per account) to ensure fair use and stability. When you exceed the limit, the server returns **429 Too Many Requests**.
+
+---
+
+## Limits
+
+Limits apply per API key and may vary by plan. Typical values are on the order of **dozens to hundreds of requests per minute** (exact numbers are configured per deployment). When in doubt, implement backoff and respect the `Retry-After` header.
+
+---
+
+## Response headers
+
+When rate limiting is in effect or when the server exposes limit information, you may see these headers:
+
+| Header | Description |
+|--------|-------------|
+| `X-RateLimit-Limit` | Maximum number of requests allowed in the current window |
+| `X-RateLimit-Remaining` | Number of requests remaining in the current window |
+| `X-RateLimit-Reset` | Time (e.g. Unix timestamp or ISO 8601) when the window resets |
+| `Retry-After` | **Recommended.** Seconds to wait before retrying (present on 429 responses) |
+
+Use **`Retry-After`** for retry logic when you receive a 429.
+
+---
+
+## 429 response body
+
+On **429 Too Many Requests**, the response body may include:
+
+```json
+{
+  "error": "Too Many Requests",
+  "message": "Rate limit exceeded",
+  "retryAfter": 60,
+  "limit": 100,
+  "remaining": 0,
+  "resetTime": "2026-03-09T17:00:00.000Z"
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `retryAfter` | Seconds to wait before retrying (same as `Retry-After` header when present) |
+| `limit` | Request limit for the window (if exposed) |
+| `remaining` | Requests left in the window (if exposed) |
+| `resetTime` | When the window resets (if exposed) |
+
+Use `retryAfter` or the **`Retry-After`** header to show a message or implement exponential backoff.
+
+---
+
+## Example: retry with Retry-After
+
+**JavaScript (fetch)**
+
+```javascript
+async function uploadWithRetry(formData) {
+  const res = await fetch('https://api.pinarkive.com/api/v3/files', {
+    method: 'POST',
+    headers: { 'X-API-Key': API_KEY },
+    body: formData,
+  });
+
+  if (res.status === 429) {
+    const retryAfter = parseInt(res.headers.get('Retry-After') || '60', 10);
+    const err = await res.json().catch(() => ({}));
+    const seconds = err.retryAfter ?? retryAfter;
+    console.warn(`Rate limited. Retry after ${seconds} seconds`);
+    await new Promise((r) => setTimeout(r, seconds * 1000));
+    return uploadWithRetry(formData);
+  }
+
+  return res.json();
+}
+```
+
+**cURL**
+
+When you get a 429, read the `Retry-After` header and wait before retrying:
+
+```bash
+# After receiving 429, wait the indicated seconds, then retry
+curl -X POST https://api.pinarkive.com/api/v3/files \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -F "file=@image.png"
+```
+
+---
+
+## Next steps
+
+- [Error handling](/reference/errors) — All error codes and status codes
+- [Status codes](/reference/status-codes) — HTTP status reference
+- [Quick Start](/quickstart/quick-start) — Upload your first file

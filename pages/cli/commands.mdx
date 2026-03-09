@@ -19,7 +19,7 @@ npx pinarkive upload file.png
 pinarkive upload path/to/document.pdf
 ```
 
-The file is sent to `POST https://api.pinarkive.com/v3/files`. The CLI prints the returned CID and gateway URL.
+The file is sent to `POST https://api.pinarkive.com/api/v3/files`. The CLI prints the returned CID and gateway URL.
 
 ## pin
 
@@ -35,7 +35,7 @@ Example:
 pinarkive pin bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi
 ```
 
-Calls `POST https://api.pinarkive.com/v3/files/pin/:cid`.
+Calls `POST https://api.pinarkive.com/api/v3/files/pin/:cid`.
 
 ## list
 
@@ -45,7 +45,7 @@ List your uploads (paginated).
 pinarkive list
 ```
 
-Calls `GET https://api.pinarkive.com/v3/users/me/uploads`.
+Calls `GET https://api.pinarkive.com/api/v3/users/me/uploads`.
 
 ## delete
 
@@ -61,16 +61,16 @@ Example:
 pinarkive delete bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi
 ```
 
-Calls `DELETE https://api.pinarkive.com/v3/files/remove/:cid`.
+Calls `DELETE https://api.pinarkive.com/api/v3/files/remove/:cid`.
 
 ## Summary
 
 | Command | Description | API endpoint |
 |---------|-------------|--------------|
-| `pinarkive upload <file>` | Upload a file | POST /v3/files |
-| `pinarkive pin <cid>` | Pin by CID | POST /v3/files/pin/:cid |
-| `pinarkive list` | List uploads | GET /v3/users/me/uploads |
-| `pinarkive delete <cid>` | Remove pin | DELETE /v3/files/remove/:cid |
+| `pinarkive upload <file>` | Upload a file | POST /api/v3/files |
+| `pinarkive pin <cid>` | Pin by CID | POST /api/v3/files/pin/:cid |
+| `pinarkive list` | List uploads | GET /api/v3/users/me/uploads |
+| `pinarkive delete <cid>` | Remove pin | DELETE /api/v3/files/remove/:cid |
 
 For the latest options and flags, run:
 

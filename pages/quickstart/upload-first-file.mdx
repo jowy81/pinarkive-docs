@@ -10,13 +10,13 @@ The fastest way to upload a file is with a single `POST /files` request using mu
 ## Endpoint
 
 ```
-POST https://api.pinarkive.com/v3/files
+POST https://api.pinarkive.com/api/v3/files
 ```
 
 ## cURL example
 
 ```bash
-curl -X POST https://api.pinarkive.com/v3/files \
+curl -X POST https://api.pinarkive.com/api/v3/files \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -F file=@image.png
 ```
@@ -31,7 +31,7 @@ Replace `YOUR_API_KEY` with your API key (from the dashboard or `POST /tokens/ge
 Example with cluster and timelock:
 
 ```bash
-curl -X POST https://api.pinarkive.com/v3/files \
+curl -X POST https://api.pinarkive.com/api/v3/files \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -F file=@document.pdf \
   -F cl=cl0-global \

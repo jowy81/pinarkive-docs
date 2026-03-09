@@ -1,0 +1,103 @@
+---
+title: Error Handling
+description: API error responses, codes, and how to handle them.
+---
+
+# Error Handling
+
+When a request fails, the API returns an appropriate HTTP status code and a JSON body with error details.
+
+---
+
+## Example error response
+
+```json
+{
+  "error": "Unauthorized",
+  "message": "Invalid or missing API key",
+  "code": "INVALID_API_KEY"
+}
+```
+
+Some responses include a `code` field for programmatic handling. When the error is scope-related, you'll also see `required` (the scope name).
+
+---
+
+## Error codes reference
+
+| Code | HTTP | Description |
+|------|------|-------------|
+| `INVALID_API_KEY` / `UNAUTHORIZED` | 401 | API key or Bearer token is missing, invalid, or expired |
+| `missing_scope` | 403 | Token does not have the required scope; check `required` in the body |
+| `FILE_TOO_LARGE` | 413 | Uploaded file exceeds the allowed size for your plan |
+| `RATE_LIMIT` | 429 | Too many requests; use `retryAfter` or `Retry-After` to retry later |
+| `2fa_required` | 400 | TOTP code required (e.g. when generating/revoking tokens with 2FA enabled) |
+| `2fa_invalid` | 400 | TOTP code missing or incorrect |
+
+---
+
+## By HTTP status
+
+| Status | When |
+|--------|------|
+| **200 / 201** | Success |
+| **400** | Bad request (validation, invalid body). For 2FA: `code: 2fa_required` or `2fa_invalid` |
+| **401** | Missing or invalid authentication (`INVALID_API_KEY`, `UNAUTHORIZED`) |
+| **403** | Forbidden: plan limit, disabled account, or token without required scope (`code: missing_scope`, `required`) |
+| **404** | Resource not found (e.g. CID not found for pin/delete) |
+| **409** | Conflict (e.g. duplicate token name) |
+| **413** | Payload too large (`FILE_TOO_LARGE`) |
+| **429** | Rate limit exceeded (`RATE_LIMIT`); see [Rate limits](/reference/rate-limits) |
+| **500 / 503** | Server or dependency error |
+
+---
+
+## Handling errors in code
+
+**JavaScript (fetch)**
+
+```javascript
+const res = await fetch('https://api.pinarkive.com/api/v3/files', {
+  method: 'POST',
+  headers: { 'X-API-Key': API_KEY },
+  body: formData,
+});
+
+if (!res.ok) {
+  const err = await res.json();
+  if (res.status === 403 && err.code === 'missing_scope') {
+    console.error('Missing scope:', err.required);
+  }
+  if (res.status === 429) {
+    const retryAfter = res.headers.get('Retry-After') || err.retryAfter;
+    console.error('Rate limited. Retry after', retryAfter, 'seconds');
+  }
+  throw new Error(err.message || res.statusText);
+}
+```
+
+**JavaScript (axios)**
+
+```javascript
+try {
+  await axios.post('https://api.pinarkive.com/api/v3/files', formData, {
+    headers: { 'X-API-Key': API_KEY },
+  });
+} catch (e) {
+  if (e.response?.status === 429) {
+    const retryAfter = e.response.headers['retry-after'] ?? e.response.data?.retryAfter;
+    console.error('Rate limited. Retry after', retryAfter, 'seconds');
+  }
+  if (e.response?.data?.code === 'missing_scope') {
+    console.error('Missing scope:', e.response.data.required);
+  }
+}
+```
+
+---
+
+## Next steps
+
+- [Rate limits](/reference/rate-limits) — Limits and `X-RateLimit-*` / `Retry-After` headers
+- [Status codes](/reference/status-codes) — Full HTTP status reference
+- [Authentication](/authentication) — API keys and scopes

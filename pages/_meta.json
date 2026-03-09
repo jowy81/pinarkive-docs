@@ -1,7 +1,10 @@
 {
   "index": "Introduction",
-  "quickstart": "Quickstart",
-  "api-reference": "API Reference",
+  "quickstart": "Quick Start",
+  "authentication": "Authentication",
+  "api-reference": "Files",
+  "account": "Account",
+  "reference": "Reference",
   "concepts": "Concepts",
   "cli": "CLI",
   "examples": "Examples"

@@ -7,44 +7,74 @@ description: Upload, pin and manage IPFS content using clusters and gateways.
 
 Upload, pin and manage IPFS content using clusters and gateways.
 
-## Try Pinarkive in 30 seconds
+---
 
-Upload your first file with a single request:
+## Base URL
 
-```bash
-curl -X POST https://api.pinarkive.com/v3/files \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -F file=@image.png
+```
+https://api.pinarkive.com/api/v3
 ```
 
-Replace `YOUR_API_KEY` with your API key and `image.png` with your file path. The response includes a **CID** you can use to access the file via IPFS gateways.
+Use this base for all API requests.
 
-[Get started →](/quickstart/introduction) · [Upload your first file →](/quickstart/upload-first-file)
+---
 
-## API Reference
+## Authentication
 
-REST API for uploading files, pinning by CID, listing uploads, and removing pins. All endpoints use **API v3**.
+All requests require an API key (or Bearer token). Send it in the header:
+
+**Header example:**
+
+```
+X-API-Key: YOUR_API_KEY
+```
+
+Or:
+
+```
+Authorization: Bearer YOUR_API_KEY
+```
+
+See [Authentication](/authentication) for details and [Quick Start](/quickstart/quick-start) to get started in under 2 minutes.
+
+---
+
+## Quick Start
+
+Get from zero to your first upload in four steps:
+
+1. **Create account** — Sign up at [pinarkive.com](https://pinarkive.com)
+2. **Generate API key** — Dashboard → API Keys, scope `files:write`
+3. **Upload a file** — `POST /files` with multipart form data
+4. **Get CID** — Response includes `cid`; use it at `https://gateway.pinarkive.com/ipfs/<cid>`
+
+[Quick Start →](/quickstart/quick-start)
+
+---
+
+## Files API
 
 | Endpoint | Description |
 |----------|-------------|
-| [POST /files](/api-reference/post-files) | Upload a file (multipart) |
-| [POST /files/pin/:cid](/api-reference/post-pin) | Pin an existing CID |
-| [GET /users/me/uploads](/api-reference/get-files) | List your uploads |
-| [DELETE /files/remove/:cid](/api-reference/delete-file) | Remove a pin |
-| [GET /users/me/clusters](/api-reference/get-clusters) | List clusters and gateways |
+| [Upload file](/api-reference/post-files) | Upload a file (multipart) |
+| [Upload directory](/api-reference/upload-directory) | Upload multiple files |
+| [Pin](/api-reference/post-pin) | Pin an existing CID |
+| [List files](/api-reference/get-files) | List your uploads |
+| [Delete file](/api-reference/delete-file) | Remove a pin |
+| [Get clusters](/api-reference/get-clusters) | List clusters and gateways |
 
-[View API Reference →](/api-reference/post-files)
+[View all endpoints →](/api-reference/post-files)
+
+---
 
 ## Examples
-
-Try the demo applications:
 
 | App | Description | Link |
 |-----|-------------|------|
 | **Upload Playground** | Drag-and-drop file uploads | [sample1.pinarkive.com](https://sample1.pinarkive.com) |
 | **Encrypted Share** | Secure, time-limited sharing | [sample2.pinarkive.com](https://sample2.pinarkive.com) |
-| **API Playground** | Test API requests in the browser | [playground.pinarkive.com](https://playground.pinarkive.com) |
+| **API Playground** | Test API in the browser | [playground.pinarkive.com](https://playground.pinarkive.com) |
 
 ---
 
-**Quick links:** [sample1.pinarkive.com](https://sample1.pinarkive.com) · [sample2.pinarkive.com](https://sample2.pinarkive.com) · [playground.pinarkive.com](https://playground.pinarkive.com)
+**Quick links:** [pinarkive.com](https://pinarkive.com) · [GitHub](https://github.com/pinarkive)

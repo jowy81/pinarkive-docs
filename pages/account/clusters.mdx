@@ -1,0 +1,80 @@
+---
+title: Clusters
+description: List clusters and gateways available to your account.
+---
+
+# Clusters
+
+List clusters allowed for your plan and their gateways (for viewing files). Use this to build gateway URLs for the content you upload or pin.
+
+**Endpoint:** `GET /users/me/clusters`  
+**Scope required:** `cluster:read`
+
+---
+
+## Endpoint
+
+**Method:** `GET`  
+**URL:** `https://api.pinarkive.com/api/v3/users/me/clusters`
+
+**Headers:** `Authorization: Bearer YOUR_API_KEY` or `X-API-Key: YOUR_API_KEY`
+
+---
+
+## Request
+
+**cURL**
+
+```bash
+curl -X GET "https://api.pinarkive.com/api/v3/users/me/clusters" \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+
+**JavaScript (fetch)**
+
+```javascript
+const response = await fetch('https://api.pinarkive.com/api/v3/users/me/clusters', {
+  headers: { 'X-API-Key': process.env.PINARKIVE_API_KEY },
+});
+const data = await response.json();
+```
+
+**JavaScript (axios)**
+
+```javascript
+const { data } = await axios.get('https://api.pinarkive.com/api/v3/users/me/clusters', {
+  headers: { 'X-API-Key': process.env.PINARKIVE_API_KEY },
+});
+```
+
+---
+
+## Response
+
+**Success (200)**
+
+```json
+[
+  {
+    "clusterId": "cl0-global",
+    "gateways": [
+      {
+        "publicUrl": "https://gateway.pinarkive.com/ipfs/",
+        "url": "https://gateway.pinarkive.com/ipfs/",
+        "label": "Primary",
+        "order": 0
+      }
+    ]
+  }
+]
+```
+
+Gateway URLs are **bases** (ending with `/ipfs/`). Append the CID: `base + cid` → e.g. `https://gateway.pinarkive.com/ipfs/<cid>`.
+
+**Error (4xx/5xx)** — See [Error handling](/reference/errors). Common: **401**, **403** (missing scope `cluster:read`), **429**.
+
+---
+
+## Full reference
+
+For more examples (Python, Go, PHP) and error details, see [GET /users/me/clusters](/api-reference/get-clusters) in the API Reference.
