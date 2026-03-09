@@ -1,4 +1,0 @@
-export default {
-  introduction: 'Introduction',
-  'upload-first-file': 'Upload your first file',
-}

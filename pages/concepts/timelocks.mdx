@@ -1,0 +1,36 @@
+---
+title: Timelocks
+description: Time-limited pins and expiration on Pinarkive.
+---
+
+# Timelocks
+
+**Timelocks** let you pin content for a fixed period. After the expiration time, the pin can be removed automatically.
+
+## How it works
+
+1. You set an expiration time as **timelock** (ISO 8601 date-time, e.g. `2026-12-31T23:59:59Z`).
+2. Pinarkive stores the content and returns `expiresAt` in the response.
+3. After the expiration, the pin may be dropped according to your account policy.
+
+Timelocks are available on **premium plans** only. Sending `timelock` on a free plan returns **403**.
+
+## Example response
+
+```json
+{
+  "cid": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
+  "clusterId": "cl0-global",
+  "expiresAt": "2026-12-31T23:59:59.000Z"
+}
+```
+
+- **expiresAt** — ISO 8601 timestamp when the timelock expires. Omitted or null if no expiration.
+
+## Use cases
+
+- **Temporary sharing** — Share a file for a limited time.
+- **Demos and trials** — Pin sample data that should not stay forever.
+- **Retention policies** — Align pins with data retention requirements.
+
+See [POST /files](/api/post-files) and [POST /pin](/api/post-pin) to set timelocks.

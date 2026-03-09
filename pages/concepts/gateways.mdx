@@ -1,0 +1,47 @@
+---
+title: Gateways
+description: Serving IPFS content via Pinarkive and public gateways.
+---
+
+# Gateways
+
+Gateways let you serve IPFS content over HTTP. Pinarkive provides primary gateways and supports the public IPFS gateway as a fallback.
+
+## Primary gateway
+
+Use the main Pinarkive gateway for content pinned to the **global** cluster:
+
+```
+https://gateway.pinarkive.com/ipfs/<cid>
+```
+
+Replace `<cid>` with your content identifier.
+
+## Secondary gateway
+
+For redundancy, use the public IPFS gateway:
+
+```
+https://ipfs.io/ipfs/<cid>
+```
+
+## Cluster-specific gateways
+
+| Cluster | Gateway URL |
+|---------|-------------|
+| **global** | `https://gateway.pinarkive.com/ipfs/<cid>` |
+| **eu** | `https://eu1.gateway.pinarkive.com/ipfs/<cid>` |
+| **na** | `https://na1.gateway.pinarkive.com/ipfs/<cid>` |
+| **us** | `https://us1.gateway.pinarkive.com/ipfs/<cid>` |
+| **de** | `https://de1.gateway.pinarkive.com/ipfs/<cid>` |
+
+## Usage in apps
+
+Build the URL from the `cid` returned by the [upload](/api/post-files) or [pin](/api/post-pin) API. You can also get gateway bases from [GET /users/me/clusters](/api/get-clusters):
+
+```javascript
+const cid = response.cid
+const url = `https://gateway.pinarkive.com/ipfs/${cid}`
+```
+
+See [Clusters](/concepts/clusters) for more on regions.

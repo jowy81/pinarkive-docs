@@ -4,9 +4,9 @@ Developer documentation for the [Pinarkive](https://pinarkive.com) platform — 
 
 ## Tech stack
 
-- **Next.js** (App Router)
-- **Nextra** docs theme
-- **MDX** documentation pages
+- **Next.js** (Pages Router)
+- **Nextra 2** + **nextra-theme-docs**
+- **MDX** documentation in `pages/`
 - **TypeScript**
 
 ## Development
@@ -16,7 +16,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000). You should see the **left sidebar navigation** (Quickstart, API Reference, Concepts, CLI, Examples) and the main content area.
 
 ## Build
 
@@ -27,13 +27,18 @@ npm start
 
 ## Deployment
 
-The site is intended to be deployed at **docs.pinarkive.com**. Build the project and deploy the output (e.g. Vercel, or any static/Node host that supports Next.js).
+Deploy at **docs.pinarkive.com** (e.g. Vercel). The project builds as a standard Next.js app with the Pages Router.
 
 ## Project structure
 
-- `app/` — Next.js App Router layout and catch-all route for MDX
-- `content/` — All documentation in MDX (maps to URLs)
-- `theme.config.tsx` — Nextra theme and navigation config
+- `pages/` — All documentation (MDX) and `_meta.json` per folder for sidebar order and titles
+  - `index.mdx` — Home with "Try Pinarkive in 30 seconds"
+  - `quickstart/` — Introduction, Upload your first file
+  - `api/` — POST /files, POST /pin, GET /files, DELETE /file, GET /clusters
+  - `concepts/` — Gateways, Clusters, Timelocks
+  - `cli/` — Installation, Commands
+  - `examples/` — Upload Playground, Encrypted Share, API Playground
+- `theme.config.jsx` — Nextra docs theme config (logo, footer, sidebar options)
 
 ## Links
 

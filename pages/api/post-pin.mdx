@@ -1,0 +1,157 @@
+---
+title: POST /pin
+description: Pin an existing IPFS content by CID.
+---
+
+# POST /pin
+
+Pin an existing CID (content already on IPFS). Requires authentication and scope `files:write`.
+
+## Endpoint
+
+```
+POST https://api.pinarkive.com/v3/files/pin/:cid
+```
+
+Replace `:cid` with the IPFS content identifier (e.g. `bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi`).
+
+## Description
+
+- **Content-Type:** `application/json`
+- **Body (optional):** `originalName`, `customName`, `cl` (cluster id), `timelock` (ISO 8601, premium only).
+- **Response:** CID, clusterId, and optionally expiresAt.
+
+## cURL
+
+```bash
+curl -X POST "https://api.pinarkive.com/v3/files/pin/bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"cl": "cl0-global"}'
+```
+
+With timelock (premium):
+
+```bash
+curl -X POST "https://api.pinarkive.com/v3/files/pin/bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"cl": "cl0-global", "timelock": "2026-12-31T23:59:59Z"}'
+```
+
+## JavaScript
+
+```javascript
+const cid = 'bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi';
+
+const response = await fetch(`https://api.pinarkive.com/v3/files/pin/${cid}`, {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${process.env.PINARKIVE_API_KEY}`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ cl: 'cl0-global' }),
+});
+
+const data = await response.json();
+console.log(data.cid, data.clusterId);
+```
+
+## Python
+
+```python
+import os
+import requests
+
+cid = "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"
+url = f"https://api.pinarkive.com/v3/files/pin/{cid}"
+headers = {
+    "Authorization": f"Bearer {os.environ['PINARKIVE_API_KEY']}",
+    "Content-Type": "application/json",
+}
+payload = {"cl": "cl0-global"}
+
+r = requests.post(url, headers=headers, json=payload)
+r.raise_for_status()
+print(r.json()["cid"], r.json()["clusterId"])
+```
+
+## Go
+
+```go
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"net/http"
+	"os"
+)
+
+func main() {
+	cid := "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"
+	url := "https://api.pinarkive.com/v3/files/pin/" + cid
+	apiKey := os.Getenv("PINARKIVE_API_KEY")
+
+	body, _ := json.Marshal(map[string]string{"cl": "cl0-global"})
+	req, _ := http.NewRequest("POST", url, bytes.NewReader(body))
+	req.Header.Set("Authorization", "Bearer "+apiKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+	// parse JSON from resp.Body for cid, clusterId
+}
+```
+
+## PHP
+
+```php
+<?php
+$cid = 'bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi';
+$url = "https://api.pinarkive.com/v3/files/pin/$cid";
+$apiKey = getenv('PINARKIVE_API_KEY');
+
+$ch = curl_init($url);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['cl' => 'cl0-global']));
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'Authorization: Bearer ' . $apiKey,
+    'Content-Type: application/json',
+]);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+$response = curl_exec($ch);
+curl_close($ch);
+$data = json_decode($response, true);
+echo $data['cid'] . ' ' . $data['clusterId'];
+```
+
+## Example response
+
+**Success (200/201)**
+
+```json
+{
+  "cid": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
+  "clusterId": "cl0-global",
+  "expiresAt": "2026-12-31T23:59:59.000Z"
+}
+```
+
+| Field       | Type   | Description                          |
+|------------|--------|--------------------------------------|
+| `cid`      | string | The pinned CID                      |
+| `clusterId`| string | Cluster where the content was pinned|
+| `expiresAt`| string \| null | Expiration (timelock), if set |
+
+**Error (4xx/5xx)**
+
+```json
+{
+  "error": "Bad Request",
+  "message": "Invalid CID"
+}
+```
+
+Common codes: **401** (unauthorized), **403** (e.g. quota, timelock on free plan, or **missing scope**: `code: missing_scope`, `required`), **404** (CID not found), **429** (rate limit; `retryAfter`, header `Retry-After`).

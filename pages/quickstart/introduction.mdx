@@ -1,0 +1,79 @@
+---
+title: Introduction
+description: Overview of the Pinarkive API and core concepts.
+---
+
+# Introduction
+
+Pinarkive is an IPFS pinning service that lets you upload files, pin content by CID, and serve it through regional clusters and gateways. The API is REST-based and uses **API v3** for all endpoints.
+
+## Base URL
+
+All requests use the following base URL:
+
+```
+https://api.pinarkive.com/v3
+```
+
+## Authentication
+
+Authenticate with either:
+
+- **Bearer token** (session JWT from login): `Authorization: Bearer <token>`
+- **API key**: `Authorization: Bearer <api_key>` or header `X-API-Key: <api_key>`
+
+API keys can be created in the dashboard with granular **scopes** (e.g. `files:read`, `files:write`, `files:delete`, `cluster:read`). Each endpoint checks that the token has the required scope; if not, the API returns **403** with `code: missing_scope` and `required` (the scope needed).
+
+## Request headers
+
+| Header | When to use | Description |
+|--------|-------------|-------------|
+| `Authorization` | Required for protected routes | `Bearer <token>` or `Bearer <api_key>` |
+| `X-API-Key` | Alternative to Bearer | API key when not using Authorization |
+| `X-Request-Source` | Optional, recommended for web apps | Send **`X-Request-Source: web`** on all requests from a browser (with Bearer). The backend uses it to classify traffic in logs (WEB vs JWT). Without it, browser requests may be logged as JWT. |
+| `X-Cluster` / `cl` | Optional | Cluster id in multi-cluster setups (or send `cl` in body/query) |
+| `Content-Type` | For JSON bodies | `application/json`. Omit for multipart uploads. |
+
+## Core workflows
+
+1. **Upload a file** — `POST /files` with `multipart/form-data`. Optional: target cluster (`cl`), timelock (premium).
+2. **Pin by CID** — `POST /files/pin/:cid` for content already on IPFS.
+3. **List uploads** — `GET /users/me/uploads` (paginated).
+4. **Remove a pin** — `DELETE /files/remove/:cid`.
+5. **List clusters** — `GET /users/me/clusters` to see allowed clusters and gateway URLs for viewing files.
+
+## Concepts
+
+- **Clusters** — Regional or logical groups (e.g. global, eu, na). Your plan determines which clusters you can use.
+- **Gateways** — HTTP URLs to serve IPFS content (e.g. `https://gateway.pinarkive.com/ipfs/<cid>`). Returned by `GET /users/me/clusters`.
+- **Timelocks** — Optional expiration (ISO 8601) for pins; available on premium plans.
+
+## Rate limiting
+
+The API applies rate limits (per minute and per second). When exceeded, the server responds with **429 Too Many Requests** and a JSON body that may include `error`, `message`, **`retryAfter`** (seconds), `limit`, `remaining`, `resetTime`. The **`Retry-After`** response header also indicates how many seconds to wait before retrying. Use `retryAfter` or `Retry-After` to show a message or implement backoff.
+
+## 2FA (optional)
+
+If the account has two-factor authentication (TOTP) enabled:
+
+- **Login:** The API may return `{ requires2FA: true, temporaryToken }` instead of a JWT. Send the 6-digit code to **POST /auth/2fa/verify-login** with `{ temporaryToken, code }` to get the final token.
+- **Generate or revoke API token:** The API may require **`totpCode`** (or **`twoFactorCode`**) in the request body. If missing or invalid, the response is **400** with `code: 2fa_required` or `code: 2fa_invalid`.
+
+## HTTP status codes (reference)
+
+| Code | When |
+|------|------|
+| **200/201** | Success |
+| **400** | Bad request (validation, invalid body). For tokens: `code: 2fa_required` or `2fa_invalid` when TOTP is required or wrong. |
+| **401** | Missing or invalid token/API key |
+| **403** | Forbidden: e.g. plan limit, disabled account, or **token without required scope** (`code: missing_scope`, `required`). |
+| **404** | Resource not found |
+| **409** | Conflict (e.g. duplicate token name) |
+| **413** | Payload too large |
+| **429** | Rate limit exceeded; use `retryAfter` / `Retry-After` to retry later. |
+| **500/503** | Server or dependency error |
+
+## Next steps
+
+- [Upload your first file](/quickstart/upload-first-file) — Minimal curl and response overview
+- [API Reference](/api/post-files) — Full endpoint documentation with examples in multiple languages

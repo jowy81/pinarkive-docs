@@ -34,3 +34,6 @@ Thumbs.db
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# Internal docs (not for public repo)
+API.md

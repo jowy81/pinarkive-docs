@@ -1,0 +1,41 @@
+---
+title: Clusters
+description: Pinarkive cluster regions and gateway rules.
+---
+
+# Clusters
+
+Pinarkive organizes pinning by **clusters** — regional or logical groups that determine where your content is stored and which gateway you use to serve it.
+
+## Available clusters
+
+| Cluster ID | Region | Description |
+|------------|--------|-------------|
+| **cl0-global** | Global | Default; replicated across regions |
+| **cl1-eu** | Europe | EU-based storage |
+| **cl1-na** | North America | North America |
+| **cl2-es** | Spain | Spain region |
+| **cl2-us** | United States | US region |
+| **cl2-de** | Germany | Germany region |
+
+You can target a cluster when uploading or pinning via the API (form/body field `cl`). Your allowed clusters are returned by [GET /users/me/clusters](/api/get-clusters).
+
+## Gateway rules
+
+| Role | URL |
+|------|-----|
+| **Primary (global)** | `https://gateway.pinarkive.com/ipfs/<cid>` |
+| **Secondary** | `https://ipfs.io/ipfs/<cid>` |
+| **eu** | `https://eu1.gateway.pinarkive.com/ipfs/<cid>` |
+| **na** | `https://na1.gateway.pinarkive.com/ipfs/<cid>` |
+| **us** | `https://us1.gateway.pinarkive.com/ipfs/<cid>` |
+| **de** | `https://de1.gateway.pinarkive.com/ipfs/<cid>` |
+
+Replace `<cid>` with your content's CID.
+
+## Choosing a cluster
+
+- Use **global** for default behavior and broad replication.
+- Use **eu**, **na**, **us**, or **de** when you need data in a specific region (latency or compliance).
+
+See [Gateways](/concepts/gateways) and [POST /files](/api/post-files) / [POST /pin](/api/post-pin) for how to set `cl`.

@@ -1,0 +1,126 @@
+---
+title: GET /files
+description: List your uploads (paginated).
+---
+
+# GET /files
+
+List uploads for the authenticated user. Requires scope `files:read`. The API endpoint is `GET /users/me/uploads`.
+
+## Endpoint
+
+```
+GET https://api.pinarkive.com/v3/users/me/uploads
+```
+
+## Description
+
+- **Query parameters:** `page` (default 1), `limit` (default/max per plan), `parentCid`, `hasExpiration=true` (filter by expiration).
+- **Response:** Array of uploads with CID, clusterId, expiresAt, and metadata.
+
+## cURL
+
+```bash
+curl -X GET "https://api.pinarkive.com/v3/users/me/uploads?page=1&limit=20" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## JavaScript
+
+```javascript
+const response = await fetch('https://api.pinarkive.com/v3/users/me/uploads?page=1&limit=20', {
+  headers: {
+    'Authorization': `Bearer ${process.env.PINARKIVE_API_KEY}`,
+  },
+});
+
+const data = await response.json();
+console.log(data.uploads);
+```
+
+## Python
+
+```python
+import os
+import requests
+
+url = "https://api.pinarkive.com/v3/users/me/uploads"
+params = {"page": 1, "limit": 20}
+headers = {"Authorization": f"Bearer {os.environ['PINARKIVE_API_KEY']}"}
+
+r = requests.get(url, headers=headers, params=params)
+r.raise_for_status()
+print(r.json())
+```
+
+## Go
+
+```go
+package main
+
+import (
+	"net/http"
+	"os"
+)
+
+func main() {
+	url := "https://api.pinarkive.com/v3/users/me/uploads?page=1&limit=20"
+	apiKey := os.Getenv("PINARKIVE_API_KEY")
+
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Set("Authorization", "Bearer "+apiKey)
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+}
+```
+
+## PHP
+
+```php
+<?php
+$url = 'https://api.pinarkive.com/v3/users/me/uploads?page=1&limit=20';
+$apiKey = getenv('PINARKIVE_API_KEY');
+
+$ch = curl_init($url);
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'Authorization: Bearer ' . $apiKey,
+]);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+$response = curl_exec($ch);
+curl_close($ch);
+$data = json_decode($response, true);
+print_r($data);
+```
+
+## Example response
+
+**Success (200)**
+
+```json
+{
+  "uploads": [
+    {
+      "cid": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
+      "clusterId": "cl0-global",
+      "expiresAt": "2026-12-31T23:59:59.000Z",
+      "createdAt": "2026-03-09T10:00:00.000Z"
+    }
+  ],
+  "total": 1
+}
+```
+
+Each item includes `clusterId` (needed for delete). Use when calling [DELETE /files/remove/:cid](/api/delete-file).
+
+**Error (4xx/5xx)**
+
+```json
+{
+  "error": "Unauthorized",
+  "message": "Invalid or missing API key"
+}
+```
+
+Common codes: **401**, **403** (missing scope: `code: missing_scope`, `required`), **429** (rate limit; `retryAfter`, header `Retry-After`).

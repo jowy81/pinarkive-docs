@@ -1,0 +1,79 @@
+---
+title: Commands
+description: Pinarkive CLI command reference.
+---
+
+# Commands
+
+Reference for all Pinarkive CLI commands. Use `PINARKIVE_API_KEY` in the environment.
+
+## upload
+
+Upload a file to Pinarkive.
+
+```bash
+npx pinarkive upload file.png
+```
+
+```bash
+pinarkive upload path/to/document.pdf
+```
+
+The file is sent to `POST https://api.pinarkive.com/v3/files`. The CLI prints the returned CID and gateway URL.
+
+## pin
+
+Pin an existing IPFS content by CID.
+
+```bash
+pinarkive pin <cid>
+```
+
+Example:
+
+```bash
+pinarkive pin bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi
+```
+
+Calls `POST https://api.pinarkive.com/v3/files/pin/:cid`.
+
+## list
+
+List your uploads (paginated).
+
+```bash
+pinarkive list
+```
+
+Calls `GET https://api.pinarkive.com/v3/users/me/uploads`.
+
+## delete
+
+Remove a pin by CID.
+
+```bash
+pinarkive delete <cid>
+```
+
+Example:
+
+```bash
+pinarkive delete bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi
+```
+
+Calls `DELETE https://api.pinarkive.com/v3/files/remove/:cid`.
+
+## Summary
+
+| Command | Description | API endpoint |
+|---------|-------------|--------------|
+| `pinarkive upload <file>` | Upload a file | POST /v3/files |
+| `pinarkive pin <cid>` | Pin by CID | POST /v3/files/pin/:cid |
+| `pinarkive list` | List uploads | GET /v3/users/me/uploads |
+| `pinarkive delete <cid>` | Remove pin | DELETE /v3/files/remove/:cid |
+
+For the latest options and flags, run:
+
+```bash
+npx pinarkive --help
+```

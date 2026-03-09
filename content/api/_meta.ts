@@ -1,7 +1,0 @@
-export default {
-  'post-files': 'POST /files',
-  'post-pin': 'POST /pin',
-  'get-files': 'GET /files',
-  'delete-file': 'DELETE /file',
-  'get-clusters': 'GET /clusters',
-}

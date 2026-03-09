@@ -1,0 +1,126 @@
+---
+title: DELETE /file
+description: Remove a pin by CID.
+---
+
+# DELETE /file
+
+Remove a pin from your account. The backend uses the stored `clusterId` for the upload to unpin from the correct cluster. Requires scope `files:delete`. The API endpoint is `DELETE /files/remove/:cid`.
+
+## Endpoint
+
+```
+DELETE https://api.pinarkive.com/v3/files/remove/:cid
+```
+
+Replace `:cid` with the IPFS content identifier to remove.
+
+## Description
+
+- No request body. The pin must belong to the authenticated user.
+- **Response:** Confirmation that the pin was removed.
+
+## cURL
+
+```bash
+curl -X DELETE "https://api.pinarkive.com/v3/files/remove/bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## JavaScript
+
+```javascript
+const cid = 'bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi';
+
+const response = await fetch(`https://api.pinarkive.com/v3/files/remove/${cid}`, {
+  method: 'DELETE',
+  headers: {
+    'Authorization': `Bearer ${process.env.PINARKIVE_API_KEY}`,
+  },
+});
+
+if (response.ok) {
+  console.log('Pin removed');
+}
+```
+
+## Python
+
+```python
+import os
+import requests
+
+cid = "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"
+url = f"https://api.pinarkive.com/v3/files/remove/{cid}"
+headers = {"Authorization": f"Bearer {os.environ['PINARKIVE_API_KEY']}"}
+
+r = requests.delete(url, headers=headers)
+r.raise_for_status()
+print("Pin removed")
+```
+
+## Go
+
+```go
+package main
+
+import (
+	"net/http"
+	"os"
+)
+
+func main() {
+	cid := "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"
+	url := "https://api.pinarkive.com/v3/files/remove/" + cid
+	apiKey := os.Getenv("PINARKIVE_API_KEY")
+
+	req, _ := http.NewRequest("DELETE", url, nil)
+	req.Header.Set("Authorization", "Bearer "+apiKey)
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+}
+```
+
+## PHP
+
+```php
+<?php
+$cid = 'bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi';
+$url = "https://api.pinarkive.com/v3/files/remove/$cid";
+$apiKey = getenv('PINARKIVE_API_KEY');
+
+$ch = curl_init($url);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'Authorization: Bearer ' . $apiKey,
+]);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+$response = curl_exec($ch);
+$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+if ($code === 200) echo "Pin removed";
+```
+
+## Example response
+
+**Success (200)**
+
+```json
+{
+  "cid": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
+  "removed": true
+}
+```
+
+**Error (4xx/5xx)**
+
+```json
+{
+  "error": "Not Found",
+  "message": "Pin not found for this CID"
+}
+```
+
+Common codes: **401**, **403** (missing scope: `code: missing_scope`, `required`), **404**, **429** (rate limit; `retryAfter`, header `Retry-After`).
