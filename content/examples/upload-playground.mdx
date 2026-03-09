@@ -1,0 +1,29 @@
+---
+title: Upload Playground
+description: Drag-and-drop file upload demo.
+---
+
+# Upload Playground
+
+The **Upload Playground** is a demo app that lets you upload files to Pinarkive with a simple drag-and-drop interface. It shows the returned CID and a gateway URL you can open or share.
+
+## Try it
+
+**[Open Upload Playground →](https://sample1.pinarkive.com)**
+
+## What it does
+
+- Drag and drop one or more files
+- Upload to the Pinarkive API
+- Display CID and gateway link for each file
+- Copy link or open in a new tab
+
+## Use case
+
+Use this as a reference for building your own upload UI (e.g. in a Next.js or React app). The flow is: get file → call `POST /upload` with the file → show the response and gateway URL.
+
+## Related
+
+- [Quickstart](/getting-started/quickstart) — Minimal upload with curl
+- [POST /upload](/api/upload) — API reference
+- [Next.js Upload Template](/templates/nextjs-upload) — Starter code for Next.js

@@ -1,0 +1,38 @@
+---
+title: Next.js Upload Template
+description: Starter template for file upload in Next.js.
+---
+
+# Next.js Upload Template
+
+This template gives you a Next.js app with a file upload flow that sends files to the Pinarkive API and displays the resulting CID and gateway URL.
+
+## What's included
+
+- Next.js (App Router) setup
+- Upload form or drag-and-drop component
+- Server action or API route that calls `POST https://api.pinarkive.com/v3/upload`
+- Display of CID and gateway link
+- Environment variable for `PINARKIVE_API_KEY`
+
+## Getting started
+
+1. Clone or download the template from the [Pinarkive GitHub](https://github.com/pinarkive) (or use the link provided in the repo).
+2. Install dependencies: `npm install`
+3. Add `.env.local` with your API key:
+   ```
+   PINARKIVE_API_KEY=your_api_key_here
+   ```
+4. Run `npm run dev` and open the upload page.
+
+## Key implementation details
+
+- **Never expose your API key in the browser.** Use a Next.js Server Action or Route Handler so the key stays on the server.
+- Build a `FormData` with the file and optional `cluster` or `expires_at`, then `fetch` the upload endpoint with `Authorization: Bearer ...`.
+- After a successful response, show `cid` and build the gateway URL: `https://gateway.pinarkive.com/ipfs/${cid}`.
+
+## Related
+
+- [Upload Playground](https://sample1.pinarkive.com) — Live demo
+- [POST /upload](/api/upload) — API reference
+- [Quickstart](/getting-started/quickstart) — Minimal upload example

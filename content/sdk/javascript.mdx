@@ -1,0 +1,85 @@
+---
+title: JavaScript SDK
+description: Use Pinarkive from JavaScript or Node.js.
+---
+
+# JavaScript SDK
+
+Use the Pinarkive API from JavaScript or Node.js with `fetch` or your preferred HTTP client.
+
+## Upload a file
+
+```javascript
+const formData = new FormData()
+formData.append('file', fileInput.files[0])
+formData.append('cluster', 'global')
+
+const response = await fetch('https://api.pinarkive.com/v3/upload', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${process.env.PINARKIVE_API_KEY}`,
+  },
+  body: formData,
+})
+
+const { cid, cluster, expires_at } = await response.json()
+const gatewayUrl = `https://gateway.pinarkive.com/ipfs/${cid}`
+```
+
+## Pin by CID
+
+```javascript
+const response = await fetch('https://api.pinarkive.com/v3/pin', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${process.env.PINARKIVE_API_KEY}`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    cid: 'bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi',
+    cluster: 'eu',
+  }),
+})
+
+const { cid, cluster } = await response.json()
+```
+
+## List files
+
+```javascript
+const response = await fetch('https://api.pinarkive.com/v3/files?limit=20', {
+  headers: {
+    'Authorization': `Bearer ${process.env.PINARKIVE_API_KEY}`,
+  },
+})
+
+const { files, total } = await response.json()
+```
+
+## Delete a pin
+
+```javascript
+const cid = 'bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi'
+
+await fetch(`https://api.pinarkive.com/v3/file/${cid}`, {
+  method: 'DELETE',
+  headers: {
+    'Authorization': `Bearer ${process.env.PINARKIVE_API_KEY}`,
+  },
+})
+```
+
+## Environment variables
+
+Store your API key securely (e.g. in `.env`):
+
+```
+PINARKIVE_API_KEY=your_api_key_here
+```
+
+Never expose the API key in client-side (browser) code. Use a backend or serverless function for uploads and pins.
+
+## Next steps
+
+- [API Reference](/api/upload) — Full request/response details
+- [Templates](/templates/nextjs-upload) — Ready-to-use Next.js and Express examples

@@ -1,0 +1,98 @@
+---
+title: CLI
+description: Pinarkive command-line interface for uploads and pin management.
+---
+
+# CLI
+
+The **Pinarkive CLI** lets you upload files, pin CIDs, list pins, and delete them from the terminal. It is designed for scripts and local workflows.
+
+## Installation
+
+Run the CLI with `npx` (no global install required):
+
+```bash
+npx pinarkive upload file.png
+```
+
+Or install globally:
+
+```bash
+npm install -g pinarkive-cli
+pinarkive upload file.png
+```
+
+## Authentication
+
+Set your API key as an environment variable:
+
+```bash
+export PINARKIVE_API_KEY=your_api_key_here
+```
+
+On Windows (PowerShell):
+
+```powershell
+$env:PINARKIVE_API_KEY = "your_api_key_here"
+```
+
+You can also pass the key via a flag or config file (see CLI help when available).
+
+## Commands
+
+### Upload a file
+
+```bash
+npx pinarkive upload file.png
+```
+
+Uploads `file.png` to the default cluster and prints the CID and gateway URL.
+
+### Pin by CID
+
+```bash
+pinarkive pin <cid>
+```
+
+Pins an existing IPFS content by its CID. Example:
+
+```bash
+pinarkive pin bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi
+```
+
+### List pins
+
+```bash
+pinarkive list
+```
+
+Lists files pinned to your account (CIDs, clusters, optional expiration).
+
+### Delete a pin
+
+```bash
+pinarkive delete <cid>
+```
+
+Removes a pin from your account. Example:
+
+```bash
+pinarkive delete bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi
+```
+
+## Summary
+
+| Command | Description |
+|---------|-------------|
+| `npx pinarkive upload <file>` | Upload a file |
+| `pinarkive pin <cid>` | Pin existing content by CID |
+| `pinarkive list` | List your pins |
+| `pinarkive delete <cid>` | Remove a pin |
+
+The CLI is under active development. For the latest options and flags, run:
+
+```bash
+npx pinarkive --help
+```
+
+For API details, see the [API Reference](/api/upload).

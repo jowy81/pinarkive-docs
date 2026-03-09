@@ -1,0 +1,38 @@
+---
+title: Express API Template
+description: Backend API template using Express and Pinarkive.
+---
+
+# Express API Template
+
+This template provides an **Express.js** backend that proxies or wraps the Pinarkive API. Use it to build your own API (e.g. for mobile or frontend clients) while keeping your Pinarkive API key on the server.
+
+## What's included
+
+- Express server with routes for upload, pin, list, and delete
+- Environment-based API key (`PINARKIVE_API_KEY`)
+- Optional validation, rate limiting, or auth middleware
+- Example routes that forward to `https://api.pinarkive.com/v3/*`
+
+## Getting started
+
+1. Get the template from the [Pinarkive GitHub](https://github.com/pinarkive).
+2. Install dependencies: `npm install`
+3. Set `PINARKIVE_API_KEY` in `.env`
+4. Run the server: `npm run dev` or `node server.js`
+5. Call your Express routes (e.g. `POST /upload`, `GET /files`) instead of calling Pinarkive directly from the client.
+
+## Key implementation details
+
+- **Upload:** Accept `multipart/form-data`, forward the file and options to `POST https://api.pinarkive.com/v3/upload` with your API key.
+- **Pin:** Accept JSON with `cid` (and optional `cluster`, `expires_at`), forward to `POST https://api.pinarkive.com/v3/pin`.
+- **List:** Forward `GET https://api.pinarkive.com/v3/files` with query params.
+- **Delete:** Forward `DELETE https://api.pinarkive.com/v3/file/:cid`.
+
+Keep the Pinarkive API key only in server environment variables.
+
+## Related
+
+- [API Reference](/api/upload) — All endpoints
+- [JavaScript SDK](/sdk/javascript) — Fetch examples
+- [Authentication](/getting-started/authentication) — API keys

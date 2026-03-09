@@ -1,0 +1,78 @@
+---
+title: GET /files
+description: List files pinned to your account.
+---
+
+# GET /files
+
+List files (pins) associated with your account. Returns CIDs, clusters, and optional metadata such as expiration.
+
+## Endpoint
+
+```
+GET https://api.pinarkive.com/v3/files
+```
+
+## Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Authorization` | Yes | `Bearer YOUR_API_KEY` |
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `limit` | number | No | Max number of items to return (default and max may vary by plan) |
+| `offset` | number | No | Number of items to skip (for pagination) |
+| `cluster` | string | No | Filter by cluster (e.g. `global`, `eu`) |
+
+## Example request
+
+```bash
+curl -X GET https://api.pinarkive.com/v3/files \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+With pagination:
+
+```bash
+curl -X GET "https://api.pinarkive.com/v3/files?limit=20&offset=0" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## Example response
+
+**Success (200)**
+
+```json
+{
+  "files": [
+    {
+      "cid": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
+      "cluster": "global",
+      "expires_at": "2026-03-11T12:00:00Z",
+      "created_at": "2026-03-09T10:00:00Z"
+    }
+  ],
+  "total": 1
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `files` | array | List of pinned items |
+| `files[].cid` | string | IPFS content identifier |
+| `files[].cluster` | string | Cluster where the content is pinned |
+| `files[].expires_at` | string \| null | Expiration time (ISO 8601), or null |
+| `files[].created_at` | string | When the pin was created (ISO 8601) |
+| `total` | number | Total count (for pagination) |
+
+**Error (4xx/5xx)**
+
+```json
+{
+  "error": "Unauthorized",
+  "message": "Invalid or missing API key"
+}
+```

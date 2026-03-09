@@ -1,0 +1,29 @@
+---
+title: Encrypted Share
+description: Secure, time-limited file sharing demo.
+---
+
+# Encrypted Share
+
+The **Encrypted Share** example demonstrates secure, time-limited file sharing. You upload a file, get a shareable link, and optionally set an expiration so the content is only available for a limited time.
+
+## Try it
+
+**[Open Encrypted Share →](https://sample2.pinarkive.com)**
+
+## What it does
+
+- Upload a file with optional expiration (timelock)
+- Receive a shareable link (gateway URL)
+- Optional encryption or access control flow (depending on demo implementation)
+- Link can expire after a set time
+
+## Use case
+
+Use this as inspiration for temporary sharing features, secure document delivery, or time-limited CDN-style links. It combines [Upload](/api/upload) (or [Pin](/api/pin)) with [Timelocks](/concepts/timelocks).
+
+## Related
+
+- [Timelocks](/concepts/timelocks) — Expiration and temporary pins
+- [Secure Share Template](/templates/secure-share) — Template to build your own
+- [POST /upload](/api/upload) — Set `expires_at` when uploading

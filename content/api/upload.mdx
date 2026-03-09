@@ -1,0 +1,84 @@
+---
+title: POST /upload
+description: Upload a file to Pinarkive and pin it on IPFS.
+---
+
+# POST /upload
+
+Upload a file to Pinarkive. The file is pinned on IPFS and stored according to the specified cluster. Returns the content identifier (CID) and optional expiration.
+
+## Endpoint
+
+```
+POST https://api.pinarkive.com/v3/upload
+```
+
+## Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Authorization` | Yes | `Bearer YOUR_API_KEY` |
+| `Content-Type` | No | Omitted when using `multipart/form-data` (default for file upload) |
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `file` | File | Yes | The file to upload (form field) |
+| `cluster` | string | No | Target cluster (e.g. `global`, `eu`, `na`, `us`, `de`). Default: `global` |
+| `expires_at` | string | No | ISO 8601 timestamp when the pin expires (timelock) |
+
+## Example request
+
+```bash
+curl -X POST https://api.pinarkive.com/v3/upload \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F file=@image.png \
+  -F cluster=global
+```
+
+With expiration:
+
+```bash
+curl -X POST https://api.pinarkive.com/v3/upload \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F file=@document.pdf \
+  -F expires_at=2026-03-11T12:00:00Z
+```
+
+## Example response
+
+**Success (200)**
+
+```json
+{
+  "cid": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
+  "cluster": "global",
+  "expires_at": "2026-03-11T12:00:00Z"
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `cid` | string | IPFS content identifier |
+| `cluster` | string | Cluster where the file was pinned |
+| `expires_at` | string \| null | Expiration time (ISO 8601), or null if no timelock |
+
+**Error (4xx/5xx)**
+
+```json
+{
+  "error": "Unauthorized",
+  "message": "Invalid or missing API key"
+}
+```
+
+## Gateway URL
+
+After upload, serve the file at:
+
+```
+https://gateway.pinarkive.com/ipfs/<cid>
+```
+
+See [Gateways](/concepts/gateways) for cluster-specific URLs.

@@ -1,0 +1,44 @@
+---
+title: Temporary CDN
+description: Use Pinarkive as a temporary CDN with timelocks.
+---
+
+# Temporary CDN
+
+You can use Pinarkive as a **temporary CDN**: upload assets, get gateway URLs, and let them expire after a set time. Useful for demos, one-off events, or time-limited content.
+
+## How it works
+
+1. **Upload** — Upload files via `POST /upload` with an `expires_at` timestamp (ISO 8601).
+2. **Serve** — Share the gateway URL: `https://gateway.pinarkive.com/ipfs/<cid>` (or a [cluster-specific gateway](/concepts/gateways)).
+3. **Expire** — After `expires_at`, the pin may be removed; the link may stop resolving on Pinarkive (content might still exist elsewhere on IPFS).
+
+## Example: expiring asset
+
+```bash
+# Expire in 7 days
+curl -X POST https://api.pinarkive.com/v3/upload \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F file=@banner.png \
+  -F "expires_at=2026-03-16T12:00:00Z"
+```
+
+Response includes `expires_at` so you can show users when the link will stop working.
+
+## Use cases
+
+- **Event assets** — Images or PDFs for a conference or webinar that should disappear afterward.
+- **Demos** — Temporary links for sales or support demos.
+- **Compliance** — Short retention for sensitive or regulated content.
+
+## Best practices
+
+- Always send `expires_at` in ISO 8601 (e.g. `2026-03-16T12:00:00Z`).
+- Store the returned `cid` and `expires_at` if you need to display or enforce expiration in your UI.
+- For long-term CDN use without expiration, omit `expires_at` or use a far-future date according to your plan.
+
+## Related
+
+- [Timelocks](/concepts/timelocks)
+- [POST /upload](/api/upload)
+- [Gateways](/concepts/gateways)
