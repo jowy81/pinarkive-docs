@@ -18,7 +18,7 @@ Pinarkive organizes pinning by **clusters** — regional or logical groups that 
 | **cl2-us** | United States | US region |
 | **cl2-de** | Germany | Germany region |
 
-You can target a cluster when uploading or pinning via the API (form/body field `cl`). Your allowed clusters are returned by [GET /users/me/clusters](/api/get-clusters).
+You can target a cluster when uploading or pinning via the API (form/body field `cl`). Your allowed clusters are returned by [GET /users/me/clusters](/api-reference/get-clusters).
 
 ## Gateway rules
 
@@ -38,4 +38,4 @@ Replace `<cid>` with your content's CID.
 - Use **global** for default behavior and broad replication.
 - Use **eu**, **na**, **us**, or **de** when you need data in a specific region (latency or compliance).
 
-See [Gateways](/concepts/gateways) and [POST /files](/api/post-files) / [POST /pin](/api/post-pin) for how to set `cl`.
+See [Gateways](/concepts/gateways) and [POST /files](/api-reference/post-files) / [POST /pin](/api-reference/post-pin) for how to set `cl`.

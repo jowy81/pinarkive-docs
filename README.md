@@ -34,7 +34,7 @@ Deploy at **docs.pinarkive.com** (e.g. Vercel). The project builds as a standard
 - `pages/` — All documentation (MDX) and `_meta.json` per folder for sidebar order and titles
   - `index.mdx` — Home with "Try Pinarkive in 30 seconds"
   - `quickstart/` — Introduction, Upload your first file
-  - `api/` — POST /files, POST /pin, GET /files, DELETE /file, GET /clusters
+  - `api-reference/` — POST /files, POST /pin, GET /files, DELETE /file, GET /clusters (do not use `pages/api/`; Next.js reserves it for API routes)
   - `concepts/` — Gateways, Clusters, Timelocks
   - `cli/` — Installation, Commands
   - `examples/` — Upload Playground, Encrypted Share, API Playground

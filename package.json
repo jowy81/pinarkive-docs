@@ -8,7 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "next": "13.5.7",
+    "next": "14.2.34",
     "nextra": "^2.2.0",
     "nextra-theme-docs": "^2.2.0",
     "react": "^18.2.0",
@@ -19,5 +19,8 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "typescript": "^5.0.0"
+  },
+  "overrides": {
+    "next-mdx-remote": "^6.0.0"
   }
 }
