@@ -1,0 +1,59 @@
+---
+title: Installation
+description: Install the Pinarkive CLI.
+---
+
+# Installation
+
+The Pinarkive CLI lets you upload files, pin CIDs, list uploads, and remove pins from the terminal.
+
+## Run with npx (no install)
+
+```bash
+npx pinarkive upload file.png
+```
+
+No global install required. Use `npx pinarkive` for any command.
+
+## Global install
+
+```bash
+npm install -g pinarkive-cli
+```
+
+Then run:
+
+```bash
+pinarkive upload file.png
+pinarkive pin <cid>
+pinarkive list
+pinarkive delete <cid>
+```
+
+## Authentication
+
+Set your API key as an environment variable:
+
+**macOS / Linux**
+
+```bash
+export PINARKIVE_API_KEY=your_api_key_here
+```
+
+**Windows (PowerShell)**
+
+```powershell
+$env:PINARKIVE_API_KEY = "your_api_key_here"
+```
+
+**Windows (cmd)**
+
+```cmd
+set PINARKIVE_API_KEY=your_api_key_here
+```
+
+Create an API key in the [Pinarkive dashboard](https://pinarkive.com) or via `POST https://api.pinarkive.com/v3/tokens/generate` with scopes `files:read`, `files:write`, `files:delete`, and `cluster:read` as needed.
+
+## Next steps
+
+- [Commands](/cli/commands) — All CLI commands and options

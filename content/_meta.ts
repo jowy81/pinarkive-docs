@@ -2,13 +2,11 @@ import type { MetaRecord } from 'nextra'
 
 const meta: MetaRecord = {
   index: 'Introduction',
-  'getting-started': 'Getting Started',
-  concepts: 'Concepts',
+  'getting-started': 'Quickstart',
   api: 'API Reference',
-  sdk: 'SDK & Tools',
+  concepts: 'Concepts',
+  cli: 'CLI',
   examples: 'Examples',
-  templates: 'Templates',
-  guides: 'Guides',
 }
 
 export default meta

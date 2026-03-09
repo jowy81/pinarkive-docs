@@ -1,0 +1,75 @@
+---
+title: Upload your first file
+description: Upload a file to Pinarkive with curl and understand the response.
+---
+
+# Upload your first file
+
+The fastest way to upload a file is with a single `POST /files` request using multipart form data.
+
+## Endpoint
+
+```
+POST https://api.pinarkive.com/v3/files
+```
+
+## cURL example
+
+```bash
+curl -X POST https://api.pinarkive.com/v3/files \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F file=@image.png
+```
+
+Replace `YOUR_API_KEY` with your API key (from the dashboard or `POST /tokens/generate`) and `image.png` with your file path.
+
+## Optional parameters
+
+- **Cluster** — Send `cl` (cluster id) in the form to target a specific cluster (e.g. `cl=cl0-global`). Your allowed clusters are returned by `GET /users/me/clusters`.
+- **Timelock** — On premium plans, send `timelock` as an ISO 8601 date-time (e.g. `2026-12-31T23:59:59Z`) to set an expiration for the pin.
+
+Example with cluster and timelock:
+
+```bash
+curl -X POST https://api.pinarkive.com/v3/files \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F file=@document.pdf \
+  -F cl=cl0-global \
+  -F "timelock=2026-12-31T23:59:59Z"
+```
+
+## Example response
+
+**Success (200 or 201)**
+
+```json
+{
+  "cid": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
+  "clusterId": "cl0-global",
+  "expiresAt": "2026-12-31T23:59:59.000Z"
+}
+```
+
+- **cid** — IPFS content identifier. Use it to access the file via a gateway or to pin elsewhere.
+- **clusterId** — Cluster where the file was pinned (needed for delete).
+- **expiresAt** — Set when using timelock; otherwise absent or null.
+
+## Gateway URL
+
+After uploading, you can serve the file at:
+
+```
+https://gateway.pinarkive.com/ipfs/<cid>
+```
+
+For cluster-specific gateways, use the URLs returned by [GET /users/me/clusters](/api/get-clusters).
+
+## Authentication
+
+- Use an **API key** with scope `files:write` (from the dashboard or `POST /api/v3/tokens/generate`).
+- Or use a **session JWT** from `POST /api/v3/auth/login` (same header: `Authorization: Bearer <token>`).
+
+## Next steps
+
+- [POST /files](/api/post-files) — Full upload reference with examples in JavaScript, Python, Go, PHP
+- [Concepts: Gateways](/concepts/gateways) — How to serve content via gateways

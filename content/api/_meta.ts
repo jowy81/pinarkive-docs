@@ -1,6 +1,7 @@
 export default {
-  upload: 'POST /upload',
-  pin: 'POST /pin',
-  files: 'GET /files',
-  delete: 'DELETE /file/:cid',
+  'post-files': 'POST /files',
+  'post-pin': 'POST /pin',
+  'get-files': 'GET /files',
+  'delete-file': 'DELETE /file',
+  'get-clusters': 'GET /clusters',
 }

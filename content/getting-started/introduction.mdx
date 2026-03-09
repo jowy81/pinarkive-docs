@@ -1,0 +1,44 @@
+---
+title: Introduction
+description: Overview of the Pinarkive API and core concepts.
+---
+
+# Introduction
+
+Pinarkive is an IPFS pinning service that lets you upload files, pin content by CID, and serve it through regional clusters and gateways. The API is REST-based and uses **API v3** for all endpoints.
+
+## Base URL
+
+All requests use the following base URL:
+
+```
+https://api.pinarkive.com/v3
+```
+
+## Authentication
+
+Authenticate with either:
+
+- **Bearer token** (session JWT from login): `Authorization: Bearer <token>`
+- **API key**: `Authorization: Bearer <api_key>` or header `X-API-Key: <api_key>`
+
+API keys can be created in the dashboard with granular **scopes** (e.g. `files:read`, `files:write`, `files:delete`). Endpoints that modify or list data require the appropriate scope.
+
+## Core workflows
+
+1. **Upload a file** — `POST /files` with `multipart/form-data`. Optional: target cluster (`cl`), timelock (premium).
+2. **Pin by CID** — `POST /files/pin/:cid` for content already on IPFS.
+3. **List uploads** — `GET /users/me/uploads` (paginated).
+4. **Remove a pin** — `DELETE /files/remove/:cid`.
+5. **List clusters** — `GET /users/me/clusters` to see allowed clusters and gateway URLs for viewing files.
+
+## Concepts
+
+- **Clusters** — Regional or logical groups (e.g. global, eu, na). Your plan determines which clusters you can use.
+- **Gateways** — HTTP URLs to serve IPFS content (e.g. `https://gateway.pinarkive.com/ipfs/<cid>`). Returned by `GET /users/me/clusters`.
+- **Timelocks** — Optional expiration (ISO 8601) for pins; available on premium plans.
+
+## Next steps
+
+- [Upload your first file](/getting-started/upload-first-file) — Minimal curl and response overview
+- [API Reference](/api/post-files) — Full endpoint documentation with examples in multiple languages

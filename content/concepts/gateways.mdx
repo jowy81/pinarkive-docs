@@ -43,7 +43,7 @@ Using the matching gateway can improve latency for users in that region.
 
 ## Usage in apps
 
-Build the URL from the `cid` returned by the [upload](/api/upload) or [pin](/api/pin) API:
+Build the URL from the `cid` returned by the [upload](/api/post-files) or [pin](/api/post-pin) API. You can also get gateway bases from [GET /users/me/clusters](/api/get-clusters):
 
 ```javascript
 const cid = response.cid

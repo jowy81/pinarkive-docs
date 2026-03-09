@@ -1,4 +1,4 @@
 export default {
-  quickstart: 'Quickstart',
-  authentication: 'Authentication',
+  introduction: 'Introduction',
+  'upload-first-file': 'Upload your first file',
 }

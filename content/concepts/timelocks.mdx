@@ -11,11 +11,11 @@ description: Time-limited pins and expiration on Pinarkive.
 
 When you upload or pin with a timelock:
 
-1. You set an expiration time (e.g. via `expires_at` or a TTL).
-2. Pinarkive stores the content and returns the expiry in the response.
+1. You set an expiration time as **timelock** (ISO 8601 date-time, e.g. `2026-12-31T23:59:59Z`).
+2. Pinarkive stores the content and returns `expiresAt` in the response.
 3. After the expiration, the pin may be dropped according to your account policy.
 
-The exact behavior (e.g. automatic unpin vs. soft expiry) depends on your plan and cluster. Check the API response and dashboard for your pin’s `expires_at` value.
+Timelocks are available on **premium plans** only. Sending `timelock` on a free plan returns **403**.
 
 ## Example response
 
@@ -23,13 +23,13 @@ Upload and pin responses can include:
 
 ```json
 {
-  "cid": "bafy...",
-  "cluster": "global",
-  "expires_at": "2026-03-11T12:00:00Z"
+  "cid": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
+  "clusterId": "cl0-global",
+  "expiresAt": "2026-12-31T23:59:59.000Z"
 }
 ```
 
-- **expires_at** — ISO 8601 timestamp when the timelock expires. Omitted if the pin has no expiration.
+- **expiresAt** — ISO 8601 timestamp when the timelock expires. Omitted or null if the pin has no expiration.
 
 ## Use cases
 
@@ -37,4 +37,4 @@ Upload and pin responses can include:
 - **Demos and trials** — Pin sample data that should not stay forever.
 - **Retention policies** — Align pins with data retention requirements.
 
-For how to set timelocks on upload or pin, see the [Upload](/api/upload) and [Pin](/api/pin) API docs.
+For how to set timelocks on upload or pin, see [POST /files](/api/post-files) and [POST /pin](/api/post-pin).
