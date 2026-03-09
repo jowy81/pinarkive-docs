@@ -3,7 +3,6 @@ export default {
   project: {
     link: 'https://github.com/pinarkive',
   },
-  docsRepositoryBase: 'https://github.com/pinarkive/pinarkive-docs',
   useNextSeoProps() {
     return {
       titleTemplate: '%s – Pinarkive',

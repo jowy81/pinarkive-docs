@@ -1,11 +1,11 @@
 ---
 title: Installation
-description: Install the Pinarkive CLI.
+description: Install and configure the Pinarkive CLI.
 ---
 
 # Installation
 
-The Pinarkive CLI lets you upload files, pin CIDs, list uploads, and remove pins from the terminal.
+The Pinarkive CLI lets you upload files, pin CIDs, list uploads, remove pins, share encrypted files, and more from the terminal.
 
 ## Run with npx (no install)
 
@@ -24,36 +24,37 @@ npm install -g pinarkive-cli
 Then run:
 
 ```bash
+pinarkive login
 pinarkive upload file.png
-pinarkive pin <cid>
-pinarkive list
-pinarkive delete <cid>
+pinarkive files
 ```
 
-## Authentication
+## Configuration and authentication
 
-Set your API key as an environment variable:
-
-**macOS / Linux**
+Most commands require an API key. Use **`pinarkive login`** to save it locally:
 
 ```bash
-export PINARKIVE_API_KEY=your_api_key_here
+pinarkive login
 ```
 
-**Windows (PowerShell)**
+You'll be prompted for your API key. It is stored in:
 
-```powershell
-$env:PINARKIVE_API_KEY = "your_api_key_here"
-```
+- **macOS / Linux:** `~/.pinarkive/config.json`
+- **Windows:** `%USERPROFILE%\.pinarkive\config.json`
 
-**Windows (cmd)**
+The config file contains only `{ "apiKey": "<your_key>" }`. If you're not logged in, the CLI will show: *"Not authenticated. Run: pinarkive login"*.
 
-```cmd
-set PINARKIVE_API_KEY=your_api_key_here
-```
+**Get an API key:** [Pinarkive dashboard](https://pinarkive.com) or `POST https://api.pinarkive.com/api/v3/tokens/generate` with scopes such as `files:read`, `files:write`, `files:delete`, `cluster:read`.
 
-Create an API key in the [Pinarkive dashboard](https://pinarkive.com) or via `POST https://api.pinarkive.com/api/v3/tokens/generate` with scopes `files:read`, `files:write`, `files:delete`, and `cluster:read` as needed.
+## Global options
+
+Available on any command:
+
+| Short | Long | Description |
+|-------|------|-------------|
+| `-V` | `--version` | Show CLI version |
+| `-h` | `--help` | Show help for the command (or global help if no command) |
 
 ## Next steps
 
-- [Commands](/cli/commands) — All CLI commands and options
+- [Commands](/cli/commands) — Full list of commands and usage

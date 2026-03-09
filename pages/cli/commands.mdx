@@ -5,75 +5,208 @@ description: Pinarkive CLI command reference.
 
 # Commands
 
-Reference for all Pinarkive CLI commands. Use `PINARKIVE_API_KEY` in the environment.
+Reference for all Pinarkive CLI commands. Commands that call the API require **`pinarkive login`** first (or a valid API key in `~/.pinarkive/config.json`).
 
-## upload
+**API base:** `https://api.pinarkive.com/api/v3`  
+**Gateway:** `https://gateway.pinarkive.com/ipfs`
 
-Upload a file to Pinarkive.
+---
 
-```bash
-npx pinarkive upload file.png
-```
+## Commands that do not require authentication
 
-```bash
-pinarkive upload path/to/document.pdf
-```
+### gateway \<cid\>
 
-The file is sent to `POST https://api.pinarkive.com/api/v3/files`. The CLI prints the returned CID and gateway URL.
-
-## pin
-
-Pin an existing IPFS content by CID.
+Print the gateway URL for a CID. Does not call the API.
 
 ```bash
-pinarkive pin <cid>
+pinarkive gateway bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi
 ```
 
-Example:
+Output: `https://gateway.pinarkive.com/ipfs/<cid>`
+
+### open \<cid\>
+
+Open the gateway URL in your default browser. Does not call the API.
+
+```bash
+pinarkive open <cid>
+```
+
+---
+
+## Authentication
+
+### login
+
+Save your API key in the local config file. Does not verify the key with the API.
+
+```bash
+pinarkive login
+```
+
+You'll be prompted: `API key: `. The key is written to `~/.pinarkive/config.json` (or `%USERPROFILE%\.pinarkive\config.json` on Windows).
+
+---
+
+## Files and pins
+
+### upload \<file\>
+
+Upload a single file. Requires authentication.
+
+```bash
+pinarkive upload file.png
+pinarkive upload ./docs/document.pdf
+```
+
+**API:** `POST /api/v3/files` (multipart `file`).  
+**Output:** CID, size (if returned), and gateway URL.
+
+**Errors:** *"Not authenticated. Run: pinarkive login"* · *"File not found: &lt;path&gt;"* · Upload failed message.
+
+### pin \<cid\>
+
+Pin an existing CID to your account. Requires authentication.
 
 ```bash
 pinarkive pin bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi
 ```
 
-Calls `POST https://api.pinarkive.com/api/v3/files/pin/:cid`.
+**API:** `POST /api/v3/files/pin/:cid`
 
-## list
+### files
 
-List your uploads (paginated).
-
-```bash
-pinarkive list
-```
-
-Calls `GET https://api.pinarkive.com/api/v3/users/me/uploads`.
-
-## delete
-
-Remove a pin by CID.
+List your uploads. Requires authentication.
 
 ```bash
-pinarkive delete <cid>
+pinarkive files
 ```
 
-Example:
+**API:** `GET /api/v3/users/me/uploads`  
+**Output:** Table with CID, Size, Cluster, Created. If empty: *"No files found."*
+
+### delete \<cid\>
+
+Remove a pin by CID. Requires authentication.
 
 ```bash
 pinarkive delete bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi
 ```
 
-Calls `DELETE https://api.pinarkive.com/api/v3/files/remove/:cid`.
+**API:** `DELETE /api/v3/files/remove/:cid`
 
-## Summary
+### clusters
 
-| Command | Description | API endpoint |
-|---------|-------------|--------------|
-| `pinarkive upload <file>` | Upload a file | POST /api/v3/files |
-| `pinarkive pin <cid>` | Pin by CID | POST /api/v3/files/pin/:cid |
-| `pinarkive list` | List uploads | GET /api/v3/users/me/uploads |
-| `pinarkive delete <cid>` | Remove pin | DELETE /api/v3/files/remove/:cid |
+List clusters available to your account. Requires authentication.
 
-For the latest options and flags, run:
+```bash
+pinarkive clusters
+```
+
+**API:** `GET /api/v3/users/me/clusters`  
+**Output:** Cluster names/IDs and related info. If empty: *"No clusters found."*
+
+---
+
+## Account and diagnostics
+
+### whoami
+
+Show the authenticated user's info. Requires authentication.
+
+```bash
+pinarkive whoami
+```
+
+**API:** `GET /api/v3/users/me`  
+**Output:** User (email/username), Plan, Clusters count.
+
+### doctor
+
+Run connectivity and auth checks. Does not modify anything.
+
+```bash
+pinarkive doctor
+```
+
+**Checks:** API reachable, API key valid, gateway reachable, cluster access.  
+**Exit code:** 0 if all pass, 1 if any fail. Useful for troubleshooting.
+
+---
+
+## Sharing and templates
+
+### share \<file\> [options]
+
+Encrypt a file locally (AES-256-GCM), upload it to Pinarkive, and print a share link with the password in the URL fragment.
+
+```bash
+pinarkive share document.pdf
+pinarkive share document.pdf -p mypassword
+pinarkive share document.pdf --expires 2025-12-31 --cluster mycluster
+```
+
+| Option | Description |
+|--------|-------------|
+| `-p`, `--password` | Password for the share link (otherwise prompted) |
+| `-e`, `--expires` | Expiration date (informational only; not sent to API) |
+| `-c`, `--cluster` | Cluster name for the share URL host (e.g. `https://<name>.pinarkive.com`) |
+
+**Flow:** Prompt for password (if not given) → encrypt file locally → upload encrypted blob via `POST /api/v3/files` → print CID and share link.  
+**Share link format:** `https://pinarkive.com/#/<cid>:<password>` (password is URL-encoded).
+
+### init
+
+Create a new project from a template (GitHub: `pinarkive/pinarkive-templates`). Does not use the Pinarkive API.
+
+```bash
+pinarkive init
+```
+
+**Flow:** Fetch templates (e.g. `express-api`, `next-upload`, `node-script`, `python-upload`, `secure-share`) → prompt to select template → prompt for project folder name → clone with degit into current directory.  
+**Output:** Next steps: `cd <folder>`, `npm install`, `pinarkive login` (if needed).
+
+---
+
+## Watch folder
+
+### watch \<folder\>
+
+Watch a directory and upload new files as they appear. Requires authentication.
+
+```bash
+pinarkive watch ./my-folder
+```
+
+**Behavior:** Watches the folder with chokidar (no initial upload of existing files). When a **new** file is added, the CLI uploads it (`POST /api/v3/files`) and then pins the CID (`POST /api/v3/files/pin/:cid`). Prints each new file and its CID.  
+**Stop:** Ctrl+C.  
+**Errors:** *"Folder not found or not a directory"* if the path is invalid.
+
+---
+
+## Summary table
+
+| Command | Description | Auth |
+|---------|-------------|------|
+| `pinarkive login` | Save API key to config | No |
+| `pinarkive upload <file>` | Upload a file | Yes |
+| `pinarkive pin <cid>` | Pin a CID | Yes |
+| `pinarkive files` | List uploads | Yes |
+| `pinarkive delete <cid>` | Remove a pin | Yes |
+| `pinarkive clusters` | List clusters | Yes |
+| `pinarkive gateway <cid>` | Print gateway URL | No |
+| `pinarkive open <cid>` | Open gateway in browser | No |
+| `pinarkive whoami` | Show current user | Yes |
+| `pinarkive doctor` | Run health/connectivity checks | No |
+| `pinarkive share <file>` | Encrypt and share with link | Yes |
+| `pinarkive init` | Create project from template | No |
+| `pinarkive watch <folder>` | Watch folder and upload new files | Yes |
+
+**API endpoints used:** `POST /files`, `POST /files/pin/:cid`, `GET /users/me/uploads`, `DELETE /files/remove/:cid`, `GET /users/me/clusters`, `GET /users/me`.
+
+For the latest options and flags:
 
 ```bash
 npx pinarkive --help
+npx pinarkive upload --help
 ```

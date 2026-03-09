@@ -1,37 +1,174 @@
 ---
 title: Upload directory
-description: Upload multiple files or a directory.
+description: Upload a directory or multiple files as a DAG.
 ---
 
 # Upload directory
 
-The API does not provide a single "upload directory" endpoint. To upload multiple files:
+The API supports two ways to upload a set of files and get a single CID:
 
-1. **Call `POST /files` for each file** — Use the same [Upload file](/api-reference/post-files) endpoint in a loop (or in parallel with rate limiting in mind).
-2. **Optional:** Use `parentCid` or metadata to associate uploads with a folder or collection if your backend supports it.
+1. **Directory (server path)** — `POST /files/directory` with a path on the **server**. Use from backend/scripts when the API server has access to a folder.
+2. **Directory DAG** — `POST /files/directory-dag` with **multipart `files[]`**. Use from clients (browser, app) to send multiple files in one request and receive one DAG CID.
 
-**Example: upload multiple files (JavaScript)**
-
-```javascript
-const files = [/* File or Blob objects */];
-const baseUrl = 'https://api.pinarkive.com/api/v3/files';
-const apiKey = process.env.PINARKIVE_API_KEY;
-
-for (const file of files) {
-  const form = new FormData();
-  form.append('file', file);
-  const res = await fetch(baseUrl, {
-    method: 'POST',
-    headers: { 'X-API-Key': apiKey },
-    body: form,
-  });
-  const data = await res.json();
-  console.log(file.name, data.cid);
-}
-```
-
-Respect [rate limits](/reference/rate-limits) when uploading in bulk. For large batches, add delay or use `Retry-After` on 429.
+Both accept optional `cl` (cluster) and `timelock` (premium) like [Upload file](/api-reference/post-files).
 
 ---
 
-**See also:** [Upload file](/api-reference/post-files) · [Rate limits](/reference/rate-limits)
+## 1. Directory (server path)
+
+Use when the **backend** can read a directory from disk (e.g. Node script, cron job). The API reads the path on the **server**, not from the client.
+
+**Endpoint:** `POST https://api.pinarkive.com/api/v3/files/directory`  
+**Scope:** `files:write`  
+**Content-Type:** `application/json`
+
+### Request
+
+**Body:** `{ "dirPath": "/absolute/or/relative/path/to/folder" }`  
+Optional: `cl`, `timelock` (premium).
+
+**cURL**
+
+```bash
+curl -X POST "https://api.pinarkive.com/api/v3/files/directory" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"dirPath": "/var/data/my-project/assets"}'
+```
+
+**JavaScript (fetch)**
+
+```javascript
+const response = await fetch('https://api.pinarkive.com/api/v3/files/directory', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': process.env.PINARKIVE_API_KEY,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ dirPath: '/var/data/my-project/assets' }),
+});
+const data = await response.json();
+```
+
+**JavaScript (axios)**
+
+```javascript
+const { data } = await axios.post(
+  'https://api.pinarkive.com/api/v3/files/directory',
+  { dirPath: '/var/data/my-project/assets' },
+  { headers: { 'X-API-Key': process.env.PINARKIVE_API_KEY } }
+);
+```
+
+### Response
+
+**Success (200/201)** — Same shape as single-file upload: `cid`, `clusterId`, optional `expiresAt`. The `cid` is the root of the directory tree (DAG).
+
+**Error** — 400 (invalid path), 401, 403, 413 (directory too large), 429. See [Error handling](/reference/errors).
+
+---
+
+## 2. Directory DAG (multiple files from client)
+
+Use when the **client** (browser, desktop app) sends multiple files in **one request**. The API builds an IPFS DAG and pins it; you get a single root CID.
+
+**Endpoint:** `POST https://api.pinarkive.com/api/v3/files/directory-dag`  
+**Scope:** `files:write`  
+**Content-Type:** `multipart/form-data`
+
+### Request
+
+**Body:** Form field **`files[]`** (array of files). Optional: `cl`, `timelock` (premium).
+
+**cURL**
+
+```bash
+curl -X POST "https://api.pinarkive.com/api/v3/files/directory-dag" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -F "files[]=@image1.png" \
+  -F "files[]=@image2.png" \
+  -F "files[]=@doc.pdf"
+```
+
+**JavaScript (fetch)**
+
+```javascript
+const form = new FormData();
+form.append('files[]', file1);
+form.append('files[]', file2);
+form.append('files[]', file3);
+
+const response = await fetch('https://api.pinarkive.com/api/v3/files/directory-dag', {
+  method: 'POST',
+  headers: { 'X-API-Key': process.env.PINARKIVE_API_KEY },
+  body: form,
+});
+const data = await response.json();
+console.log(data.cid); // single root CID for the DAG
+```
+
+**JavaScript (axios)**
+
+```javascript
+const form = new FormData();
+files.forEach((file) => form.append('files[]', file));
+
+const { data } = await axios.post(
+  'https://api.pinarkive.com/api/v3/files/directory-dag',
+  form,
+  { headers: { 'X-API-Key': process.env.PINARKIVE_API_KEY } }
+);
+console.log(data.cid);
+```
+
+**Python**
+
+```python
+import os
+import requests
+
+url = "https://api.pinarkive.com/api/v3/files/directory-dag"
+headers = {"X-API-Key": os.environ["PINARKIVE_API_KEY"]}
+files = [
+    ("files[]", open("image1.png", "rb")),
+    ("files[]", open("image2.png", "rb")),
+    ("files[]", open("doc.pdf", "rb")),
+]
+r = requests.post(url, headers=headers, files=files)
+r.raise_for_status()
+print(r.json()["cid"])
+```
+
+### Response
+
+**Success (200/201)**
+
+```json
+{
+  "cid": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
+  "clusterId": "cl0-global",
+  "expiresAt": null
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `cid` | Root CID of the DAG (use this to access the whole directory) |
+| `clusterId` | Cluster where the DAG was pinned |
+| `expiresAt` | Set if `timelock` was sent; otherwise `null` |
+
+**Error** — Same as [Upload file](/api-reference/post-files): 401, 403, 413, 429. See [Error handling](/reference/errors).
+
+---
+
+## When to use which
+
+| Use case | Endpoint | Request |
+|----------|----------|---------|
+| Backend has a folder path on the server | `POST /files/directory` | JSON `{ dirPath }` |
+| Client sends multiple files (browser, app) | `POST /files/directory-dag` | Multipart `files[]` |
+| Single file | [POST /files](/api-reference/post-files) | Multipart `file` |
+
+---
+
+**See also:** [Upload file](/api-reference/post-files) · [Pin](/api-reference/post-pin) · [Rate limits](/reference/rate-limits)
