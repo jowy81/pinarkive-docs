@@ -29,6 +29,25 @@ npm start
 
 Deploy at **docs.pinarkive.com** (e.g. Vercel). The project builds as a standard Next.js app with the Pages Router.
 
+### Google Analytics 4 (GA4)
+
+To enable GA4 and track docs traffic:
+
+1. **Variable en Vercel**  
+   En el proyecto de Vercel: **Settings → Environment Variables** añade:
+
+   | Name | Value | Environment |
+   |------|--------|-------------|
+   | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | `G-XXXXXXXXXX` | Production (y opcionalmente Preview) |
+
+   Sustituye `G-XXXXXXXXXX` por tu **Measurement ID** de GA4 (Admin → Data Streams → tu stream → Measurement ID).
+
+2. **Comportamiento**  
+   El sitio lee esta variable en build time. Si está definida, se inyecta el script de `gtag.js` en el `<head>` y se hace seguimiento de páginas en GA4. Si no defines la variable, no se carga ningún script de analytics.
+
+3. **Re-deploy**  
+   Después de crear o cambiar la variable, haz un nuevo deploy (Redeploy en Vercel) para que el build use el valor actual.
+
 ## Project structure
 
 - `pages/` — All documentation (MDX) and `_meta.json` per folder for sidebar order and titles
