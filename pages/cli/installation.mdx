@@ -5,7 +5,7 @@ description: Install and configure the Pinarkive CLI.
 
 # Installation
 
-The Pinarkive CLI lets you upload files, pin CIDs, list uploads, remove pins, share encrypted files, and more from the terminal.
+The Pinarkive CLI lets you upload files, pin CIDs, list uploads, remove pins, share encrypted files, and more from the terminal. It targets the **Pinarkive API v3** and uses the official [@pinarkive/pinarkive-sdk-ts](https://www.npmjs.com/package/@pinarkive/pinarkive-sdk-ts) for all API calls.
 
 ## Run with npx (no install)
 
@@ -15,10 +15,12 @@ npx pinarkive upload file.png
 
 No global install required. Use `npx pinarkive` for any command.
 
-## Global install
+## Global install (recommended)
+
+Install the **wrapper package** to get the latest CLI version:
 
 ```bash
-npm install -g pinarkive-cli
+npm install -g pinarkive
 ```
 
 Then run:
@@ -28,6 +30,18 @@ pinarkive login
 pinarkive upload file.png
 pinarkive files
 ```
+
+The `pinarkive` package is a lightweight wrapper that installs [@pinarkive/pinarkive-cli](https://www.npmjs.com/package/@pinarkive/pinarkive-cli) and exposes the `pinarkive` command. You always get the latest CLI without specifying the scoped package name.
+
+### Install a specific CLI version
+
+To pin a specific version of the CLI (e.g. **1.0.2**):
+
+```bash
+npm install -g @pinarkive/pinarkive-cli
+```
+
+Use `@pinarkive/pinarkive-cli@1.0.2` for a fixed version.
 
 ## Configuration and authentication
 

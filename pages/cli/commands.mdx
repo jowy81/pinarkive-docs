@@ -5,7 +5,7 @@ description: Pinarkive CLI command reference.
 
 # Commands
 
-Reference for all Pinarkive CLI commands. Commands that call the API require **`pinarkive login`** first (or a valid API key in `~/.pinarkive/config.json`).
+Reference for all Pinarkive CLI commands (from [@pinarkive/pinarkive-cli](https://www.npmjs.com/package/@pinarkive/pinarkive-cli), current version **1.0.2**). Commands that call the API require **`pinarkive login`** first (or a valid API key in `~/.pinarkive/config.json`). The CLI uses the official [@pinarkive/pinarkive-sdk-ts](https://www.npmjs.com/package/@pinarkive/pinarkive-sdk-ts) for API requests.
 
 **API base:** `https://api.pinarkive.com/api/v3`  
 **Gateway:** `https://gateway.pinarkive.com/ipfs`
@@ -207,6 +207,8 @@ pinarkive watch ./my-folder
 For the latest options and flags:
 
 ```bash
-npx pinarkive --help
-npx pinarkive upload --help
+pinarkive --help
+pinarkive upload --help
 ```
+
+**Install:** `npm install -g pinarkive` (wrapper, latest) or `npm install -g @pinarkive/pinarkive-cli` (specific version). See [Installation](/cli/installation).
