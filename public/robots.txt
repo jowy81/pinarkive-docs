@@ -1,0 +1,5 @@
+# https://docs.pinarkive.com
+User-agent: *
+Allow: /
+
+Sitemap: https://docs.pinarkive.com/sitemap.xml

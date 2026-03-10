@@ -1,0 +1,17 @@
+# PinArkive Documentation (docs.pinarkive.com)
+
+This site is the official documentation for PinArkive — your decentralized storage solution.
+
+PinArkive lets you upload, pin and manage IPFS content using clusters and gateways. The docs cover:
+
+- Quick start and introduction
+- Authentication and API reference (upload, pin, list, delete files; clusters)
+- Account: profile, tokens, clusters, plans
+- Concepts: gateways, clusters, timelocks
+- CLI: installation and commands
+- Reference: errors, rate limits, status codes
+- Examples: upload playground, encrypted share, API playground
+
+Base API URL: https://api.pinarkive.com/api/v3
+
+Main site: https://pinarkive.com

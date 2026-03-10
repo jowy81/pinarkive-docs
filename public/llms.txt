@@ -1,0 +1,7 @@
+# PinArkive Documentation
+
+> PinArkive — Your decentralized storage solution.
+
+Official developer documentation for PinArkive (https://docs.pinarkive.com). Covers API usage, CLI, authentication, clusters, gateways, and examples for uploading, pinning and managing IPFS content.
+
+Sitemap: https://docs.pinarkive.com/sitemap.xml
