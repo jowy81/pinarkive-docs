@@ -14,22 +14,19 @@ export default {
     const { asPath } = useRouter()
     const canonical = asPath === '/' ? SITE_URL : `${SITE_URL}${asPath}`
     return {
-      titleTemplate: '%s – PinArkive',
+      titleTemplate: '%s | PinArkive Docs',
       defaultTitle: DEFAULT_TITLE,
       description: DEFAULT_DESCRIPTION,
       canonical,
       openGraph: {
         type: 'website',
         url: canonical,
-        title: DEFAULT_TITLE,
-        description: DEFAULT_DESCRIPTION,
-        images: [{ url: OG_IMAGE, alt: 'PinArkive' }],
+        images: [{ url: OG_IMAGE, alt: 'PinArkive — Your decentralized storage solution.' }],
         siteName: 'PinArkive Docs',
+        locale: 'en',
       },
       twitter: {
         cardType: 'summary_large_image',
-        title: DEFAULT_TITLE,
-        description: DEFAULT_DESCRIPTION,
         image: OG_IMAGE,
       },
     }
@@ -41,15 +38,11 @@ export default {
       <meta name="keywords" content="PinArkive, IPFS, decentralized storage, pinning, clusters, gateways, documentation, API, CLI" />
       <link rel="icon" href="https://pinarkive.com/img/favicon.ico" sizes="any" />
       <link rel="apple-touch-icon" href="https://pinarkive.com/img/logo_fullmark.png" />
-      <meta property="og:title" content={DEFAULT_TITLE} />
-      <meta property="og:description" content={DEFAULT_DESCRIPTION} />
       <meta property="og:image" content={OG_IMAGE} />
-      <meta property="og:url" content={SITE_URL} />
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content="PinArkive Docs" />
+      <meta property="og:locale" content="en" />
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={DEFAULT_TITLE} />
-      <meta name="twitter:description" content={DEFAULT_DESCRIPTION} />
       <meta name="twitter:image" content={OG_IMAGE} />
       {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
         <>

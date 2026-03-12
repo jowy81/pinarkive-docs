@@ -1,5 +1,7 @@
 # https://docs.pinarkive.com
+# Allow all crawlers to index documentation (do not block / or /quickstart, etc.)
 User-agent: *
 Allow: /
 
+# Staging/preview: block with noindex via meta or env; do not add Disallow here for prod
 Sitemap: https://docs.pinarkive.com/sitemap.xml

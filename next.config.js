@@ -6,4 +6,15 @@ const withNextra = require('nextra')({
 
 module.exports = withNextra({
   reactStrictMode: true,
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'Content-Language', value: 'en' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+        ],
+      },
+    ]
+  },
 })
