@@ -44,24 +44,6 @@ export default {
       <meta property="og:locale" content="en" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:image" content={OG_IMAGE} />
-      {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
-        <>
-          <script
-            async
-            src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}`}
-          />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}');
-              `,
-            }}
-          />
-        </>
-      )}
     </>
   ),
   primaryHue: { dark: 200, light: 220 },

@@ -29,24 +29,22 @@ npm start
 
 Deploy at **docs.pinarkive.com** (e.g. Vercel). The project builds as a standard Next.js app with the Pages Router.
 
-### Google Analytics 4 (GA4)
-
-To enable GA4 and track docs traffic:
+### Google Analytics 4 (GA4) + cookie consent
 
 1. **Variable en Vercel**  
    En el proyecto de Vercel: **Settings → Environment Variables** añade:
 
    | Name | Value | Environment |
    |------|--------|-------------|
-   | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | `G-XXXXXXXXXX` | Production (y opcionalmente Preview) |
+   | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | `G-DPFDHZV1JY` | Production (y opcionalmente Preview) |
 
-   Sustituye `G-XXXXXXXXXX` por tu **Measurement ID** de GA4 (Admin → Data Streams → tu stream → Measurement ID).
+   Docs stream Measurement ID: **`G-DPFDHZV1JY`**. No reutilices el ID de Marketing ni el de App.
 
-2. **Comportamiento**  
-   El sitio lee esta variable en build time. Si está definida, se inyecta el script de `gtag.js` en el `<head>` y se hace seguimiento de páginas en GA4. Si no defines la variable, no se carga ningún script de analytics.
+2. **Consentimiento**  
+   El script de GA **no** se inyecta en el `<head>`. El componente `CookieAnalytics` muestra un banner Accept / Reject. Solo tras **Accept** se carga `gtag.js` y se envía un `page_view` real (y en cada cambio de ruta). Si el usuario rechaza, no se carga el script ni se envían hits.
 
 3. **Re-deploy**  
-   Después de crear o cambiar la variable, haz un nuevo deploy (Redeploy en Vercel) para que el build use el valor actual.
+   Después de crear o cambiar la variable, haz un nuevo deploy (o push a `main`) para que el build use el valor actual.
 
 ## Project structure
 
